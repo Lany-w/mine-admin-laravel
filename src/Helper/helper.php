@@ -13,3 +13,4 @@ if (!function_exists('t')) {
         return trans($key,$replace,$locale);
     }
 }
+

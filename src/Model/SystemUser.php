@@ -8,8 +8,10 @@
 namespace Lany\MineAdmin\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * @property int $id 用户ID，主键
@@ -36,8 +38,11 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class SystemUser extends Authenticatable implements JWTSubject
 {
     protected $table = 'system_user';
+
+    const SUPER_ADMIN_ID = 1;
     const USER_NORMAL = 1;
     const USER_BAN = 2;
+    protected $hidden = ['password', 'deleted_at'];
     /**
      * Notes:通过用户名检索用户.
      * User: Lany
@@ -49,6 +54,22 @@ class SystemUser extends Authenticatable implements JWTSubject
     {
         return self::query()->where('username', $username)->firstOrFail();
     }
+
+    public function isSuperAdmin(): bool
+    {
+        return config('mine_admin.super_admin_id', self::SUPER_ADMIN_ID) == $this->id;
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemRole::class, 'system_user_role', 'user_id', 'role_id');
+    }
+
+    public function refresh(): string
+    {
+        return JWTAuth::refresh();
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

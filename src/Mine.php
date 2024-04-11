@@ -6,6 +6,7 @@
  */
 namespace Lany\MineAdmin;
 use Illuminate\Support\Facades\Auth;
+use Lany\MineAdmin\Controller\CommonController;
 use Lany\MineAdmin\Controller\LoginController;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\StatefulGuard;
@@ -57,7 +58,7 @@ class Mine
     public static function routes(): void
     {
         $attributes = [
-            'prefix'     => config('mine_admin.route.prefix', 'system'),
+            'prefix'     => 'system',
             'middleware' => config('mine_admin.route.middleware', []),
         ];
 
@@ -66,9 +67,18 @@ class Mine
                 $authController = config('mine_admin.auth.controller', LoginController::class);
                 $router->get('/getBingBackgroundImage', $authController.'@getBingBackgroundImage');
                 $router->post('/login', $authController.'@login');
+                $router->post('/logout', $authController.'@logout');
                 $router->get('/getInfo', $authController.'@getInfo');
+
+                app('router')->group([
+                    'prefix' => 'common'
+                ], function ($router) {
+                    $router->get('/getNoticeList', [CommonController::class, 'getNoticeList']);
+                });
+
             });
         }
+
     }
 
     public static function guard(): Guard|StatefulGuard

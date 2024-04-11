@@ -11,15 +11,20 @@ use Illuminate\Support\Facades\Event;
 use Lany\MineAdmin\Command\InstallProjectCommand;
 use Lany\MineAdmin\Events\UserLoginAfter;
 use Lany\MineAdmin\Events\UserLoginBefore;
+use Lany\MineAdmin\Helper\MineCollection;
 use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
+use Lany\MineAdmin\Services\SystemUserService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
 
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/jwt.php', 'jwt');
         $this->loadAdminAuthConfig();
+        $this->registerCommand();
+        $this->registerServices();
     }
     public function boot(): void
     {
@@ -28,7 +33,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/lang', 'mine');
         $this->langFiles();
         $this->registerEvent();
-        $this->registerCommand();
+        MineCollection::boot();
     }
 
     protected function registerCommand(): void
@@ -38,6 +43,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 InstallProjectCommand::class
             ]);
         }
+    }
+
+    protected function registerServices(): void
+    {
+        $this->app->singleton(SystemUserService::class, fn() =>  new SystemUserService());
+        $this->app->alias(SystemUserService::class, 'SystemUserService');
     }
 
     protected function registerEvent(): void

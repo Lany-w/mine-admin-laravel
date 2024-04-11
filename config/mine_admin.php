@@ -6,6 +6,9 @@
  */
 
 return [
+    // 是否启用数据权限
+    'data_scope_enabled' => true,
+    'super_admin_id' => env('SUPER_ADMIN_ID', 1),
     /*
     |--------------------------------------------------------------------------
     |route settings
