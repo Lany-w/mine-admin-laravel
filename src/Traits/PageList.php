@@ -14,6 +14,12 @@ trait PageList
 {
     use UserDataScope;
     public const PAGE_SIZE = 15;
+
+    public function getList(?array $params, bool $isScope = true): array
+    {
+        return $this->listQuerySetting($params, $isScope)->get()->toArray();
+    }
+
     /*
      * 获取数据列表(带分页)
      */
@@ -87,7 +93,7 @@ trait PageList
     /**
      * 排序处理器.
      */
-    public function handleOrder(Builder $query, ?array &$params = null): Builder
+    public function handleOrder(Builder &$query, ?array &$params = null): Builder
     {
         // 对树型数据强行加个排序
         if (isset($params['_mineadmin_tree'])) {
@@ -110,7 +116,7 @@ trait PageList
     /**
      * 搜索处理器.
      */
-    public function handleSearch(Builder $query, array $params): Builder
+    public function handleSearch(Builder &$query, array $params): Builder
     {
         return $query;
     }

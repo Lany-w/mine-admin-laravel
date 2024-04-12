@@ -2,7 +2,7 @@
 /**
  * Notes:
  * User: Lany
- * DateTime: 2024/4/9 17:24
+ * DateTime: 2024/4/11 13:25
  */
 
 namespace Lany\MineAdmin\Model;
@@ -10,32 +10,27 @@ namespace Lany\MineAdmin\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Lany\MineAdmin\Traits\PageList;
 
-class SystemLoginLog extends MineModel
+class SystemOperLog extends MineModel
 {
     use PageList;
-    public $timestamps = false;
-    public const SUCCESS = 1;
-    public const FAIL = 2;
-    protected $table = 'system_login_log';
+    protected $table = 'system_oper_log';
+
 
     public function handleSearch(Builder $query, array $params): Builder
     {
         if (isset($params['ip']) && filled($params['ip'])) {
             $query->where('ip', $params['ip']);
         }
-
+        if (isset($params['service_name']) && filled($params['service_name'])) {
+            $query->where('service_name', 'like', '%' . $params['service_name'] . '%');
+        }
         if (isset($params['username']) && filled($params['username'])) {
             $query->where('username', 'like', '%' . $params['username'] . '%');
         }
-
-        if (isset($params['status']) && filled($params['status'])) {
-            $query->where('status', $params['status']);
-        }
-
-        if (isset($params['login_time']) && filled($params['login_time']) && is_array($params['login_time']) && count($params['login_time']) == 2) {
+        if (isset($params['created_at']) && filled($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
-                'login_time',
-                [$params['login_time'][0] . ' 00:00:00', $params['login_time'][1] . ' 23:59:59']
+                'created_at',
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
         return $query;

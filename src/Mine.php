@@ -7,6 +7,8 @@
 namespace Lany\MineAdmin;
 use Illuminate\Support\Facades\Auth;
 use Lany\MineAdmin\Controller\CommonController;
+use Lany\MineAdmin\Controller\DataCenter\DictDataController;
+use Lany\MineAdmin\Controller\DataCenter\QueueMessageController;
 use Lany\MineAdmin\Controller\LoginController;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\StatefulGuard;
@@ -71,9 +73,26 @@ class Mine
                 $router->get('/getInfo', $authController.'@getInfo');
 
                 app('router')->group([
-                    'prefix' => 'common'
+                    'prefix' => 'common',
+                    'controller' => CommonController::class
                 ], function ($router) {
-                    $router->get('/getNoticeList', [CommonController::class, 'getNoticeList']);
+                    $router->get('/getNoticeList', 'getNoticeList');
+                    $router->get('/getLoginLogList', 'getLoginLogPageList');
+                    $router->get('/getOperationLogList', 'getOperLogPageList');
+                });
+
+                app('router')->group([
+                    'prefix' => 'dataDict',
+                    'controller' => DictDataController::class
+                ], function ($router) {
+                    $router->get('/list', 'list');
+                });
+
+                app('router')->group([
+                    'prefix' => 'queueMessage',
+                    'controller' => QueueMessageController::class
+                ], function ($router) {
+                    $router->get('/receiveList', 'receiveList');
                 });
 
             });

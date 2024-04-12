@@ -6,9 +6,13 @@
  */
 
 namespace Lany\MineAdmin\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-class SystemRole extends CommonModel
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class SystemRole extends MineModel
 {
+    use SoftDeletes;
     protected $table = 'system_role';
 
     // 所有
@@ -57,5 +61,31 @@ class SystemRole extends CommonModel
     public function depts(): BelongsToMany
     {
         return $this->belongsToMany(SystemDept::class, 'system_role_dept', 'role_id', 'dept_id');
+    }
+
+    public function handleSearch(Builder $query, array $params): Builder
+    {
+        if (isset($params['name']) && filled($params['name'])) {
+            $query->where('name', 'like', '%' . $params['name'] . '%');
+        }
+        if (isset($params['code']) && filled($params['code'])) {
+            $query->where('code', $params['code']);
+        }
+
+        if (isset($params['status']) && filled($params['status'])) {
+            $query->where('status', $params['status']);
+        }
+
+        if (isset($params['filterAdminRole']) && filled($params['filterAdminRole'])) {
+            $query->whereNotIn('id', [env('ADMIN_ROLE')]);
+        }
+
+        if (isset($params['created_at']) && filled($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
+            $query->whereBetween(
+                'created_at',
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
+            );
+        }
+        return $query;
     }
 }

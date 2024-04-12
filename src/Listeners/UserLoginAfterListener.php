@@ -40,7 +40,7 @@ class UserLoginAfterListener
             'os' => $this->os($agent),
             'browser' => $this->browser($agent),
             'status' => $event->loginStatus ? SystemLoginLog::SUCCESS : SystemLoginLog::FAIL,
-            'message' => $loginStatus == -1 ? trans('jwt.user_ban') : ($loginStatus ? trans('jwt.login_success') : trans('jwt.login_error')),
+            'message' => $loginStatus === -1 ? trans('jwt.user_ban') : ($loginStatus ? trans('jwt.login_success') : trans('jwt.login_error')),
             'login_time' => date('Y-m-d H:i:s'),
         ]);
     }

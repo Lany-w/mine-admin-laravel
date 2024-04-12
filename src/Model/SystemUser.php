@@ -9,7 +9,9 @@ namespace Lany\MineAdmin\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -37,6 +39,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  */
 class SystemUser extends Authenticatable implements JWTSubject
 {
+    use SoftDeletes;
     protected $table = 'system_user';
 
     const SUPER_ADMIN_ID = 1;
@@ -64,6 +67,87 @@ class SystemUser extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(SystemRole::class, 'system_user_role', 'user_id', 'role_id');
     }
+
+
+    public function handleSearch(Builder $query, array $params): Builder
+    {
+        if (isset($params['dept_id']) && filled($params['dept_id']) && is_string($params['dept_id'])) {
+            $tablePrefix = config('database.connections.'.env('DB_CONNECTION').'.prefix');
+            $query->selectRaw(DB::raw("DISTINCT {$tablePrefix}system_user.*"))
+                ->join('system_user_dept as dept', 'system_user.id', '=', 'dept.user_id')
+                ->whereIn(
+                    'dept.dept_id',
+                    SystemDept::query()
+                        ->where(function ($query) use ($params) {
+                            $query->where('id', '=', $params['dept_id'])
+                                ->orWhere('level', 'like', $params['dept_id'] . ',%')
+                                ->orWhere('level', 'like', '%,' . $params['dept_id'])
+                                ->orWhere('level', 'like', '%,' . $params['dept_id'] . ',%');
+                        })
+                        ->pluck('id')
+                        ->toArray()
+                );
+        }
+        if (isset($params['username']) && filled($params['username'])) {
+            $query->where('username', 'like', '%' . $params['username'] . '%');
+        }
+        if (isset($params['nickname']) && filled($params['nickname'])) {
+            $query->where('nickname', 'like', '%' . $params['nickname'] . '%');
+        }
+        if (isset($params['phone']) && filled($params['phone'])) {
+            $query->where('phone', '=', $params['phone']);
+        }
+        if (isset($params['email']) && filled($params['email'])) {
+            $query->where('email', '=', $params['email']);
+        }
+        if (isset($params['status']) && filled($params['status'])) {
+            $query->where('status', $params['status']);
+        }
+
+        if (isset($params['filterSuperAdmin']) && filled($params['filterSuperAdmin'])) {
+            $query->whereNotIn('id', [env('SUPER_ADMIN')]);
+        }
+
+        if (isset($params['created_at']) && filled($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
+            $query->whereBetween(
+                'created_at',
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
+            );
+        }
+
+        if (isset($params['userIds']) && filled($params['userIds'])) {
+            $query->whereIn('id', $params['userIds']);
+        }
+
+        if (isset($params['showDept']) && filled($params['showDept'])) {
+            $isAll = $params['showDeptAll'] ?? false;
+
+            $query->with(['depts' => function ($query) use ($isAll) {
+                /* @var Builder $query */
+                $query->where('status', SystemDept::ENABLE);
+                return $isAll ? $query->select(['*']) : $query->select(['id', 'name']);
+            }]);
+        }
+
+        if (isset($params['role_id']) && filled($params['role_id'])) {
+            $tablePrefix = env('DB_PREFIX');
+            $query->whereRaw(
+                "id IN ( SELECT user_id FROM {$tablePrefix}system_user_role WHERE role_id = ? )",
+                [$params['role_id']]
+            );
+        }
+
+        if (isset($params['post_id']) && filled($params['post_id'])) {
+            $tablePrefix = env('DB_PREFIX');
+            $query->whereRaw(
+                "id IN ( SELECT user_id FROM {$tablePrefix}system_user_post WHERE post_id = ? )",
+                [$params['post_id']]
+            );
+        }
+
+        return $query;
+    }
+
 
     public function refresh(): string
     {

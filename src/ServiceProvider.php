@@ -14,6 +14,7 @@ use Lany\MineAdmin\Events\UserLoginBefore;
 use Lany\MineAdmin\Helper\MineCollection;
 use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
+use Lany\MineAdmin\Services\SystemDictDataService;
 use Lany\MineAdmin\Services\SystemUserService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -49,6 +50,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         $this->app->singleton(SystemUserService::class, fn() =>  new SystemUserService());
         $this->app->alias(SystemUserService::class, 'SystemUserService');
+        $this->app->singleton(SystemDictDataService::class, fn() =>  new SystemDictDataService());
+        $this->app->alias(SystemDictDataService::class, 'SystemDictDataService');
     }
 
     protected function registerEvent(): void
