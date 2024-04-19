@@ -9,10 +9,12 @@ namespace Lany\MineAdmin\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Lany\MineAdmin\Traits\PageList;
 
 class SystemMenu extends MineModel
 {
     use SoftDeletes;
+    use PageList;
     protected $table = 'system_menu';
     public const LINK = 'L';
 

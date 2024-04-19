@@ -21,6 +21,7 @@ use Lany\MineAdmin\Services\SystemDictDataService;
 use Lany\MineAdmin\Services\SystemPostService;
 use Lany\MineAdmin\Services\SystemRoleService;
 use Lany\MineAdmin\Services\SystemUserService;
+use Lany\MineAdmin\Services\SystemMenuService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -75,6 +76,9 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         //SystemPostService
         $this->app->singleton(SystemPostService::class, fn() =>  new SystemPostService());
         $this->app->alias(SystemPostService::class, 'SystemPostService');
+        //SystemMenuService
+        $this->app->singleton(SystemMenuService::class, fn() =>  new SystemMenuService());
+        $this->app->alias(SystemMenuService::class, 'SystemMenuService');
     }
 
     protected function registerEvent(): void

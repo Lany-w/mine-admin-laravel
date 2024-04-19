@@ -172,4 +172,9 @@ class SystemUser extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
 }

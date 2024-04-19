@@ -9,6 +9,8 @@ namespace Lany\MineAdmin\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Lany\MineAdmin\Model\SystemMenu;
+use Lany\MineAdmin\Model\SystemUser;
 
 trait PageList
 {
@@ -20,7 +22,7 @@ trait PageList
         return $this->listQuerySetting($params, $isScope)->get()->toArray();
     }
 
-    /*
+    /**
      * 获取数据列表(带分页)
      */
     public function getPageList(?array $params = [], bool $isScope = true, string $pageName = 'page'): array

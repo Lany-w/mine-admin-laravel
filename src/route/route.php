@@ -13,6 +13,7 @@ use Lany\MineAdmin\Controller\Permission\DeptController;
 use Lany\MineAdmin\Controller\Permission\RoleController;
 use Lany\MineAdmin\Controller\Permission\PostController;
 use Lany\MineAdmin\Controller\Permission\UserController;
+use Lany\MineAdmin\Controller\Permission\MenuController;
 use Lany\MineAdmin\Mine;
 
 
@@ -31,7 +32,9 @@ if (config('mine_admin.auth.enable', true)) {
 
         $router->post('/logout', $authController.'@logout');
         $router->get('/getInfo', $authController.'@getInfo');
-        //common
+        /**
+         * common
+         */
         app('router')->group([
             'prefix' => 'common',
             'controller' => CommonController::class
@@ -41,31 +44,50 @@ if (config('mine_admin.auth.enable', true)) {
             $router->get('/getOperationLogList', 'getOperLogPageList');
             $router->get('/getResourceList', 'getResourceList');
         });
-        //dataDict
+        /**
+         * dataDict
+         */
         app('router')->group(['prefix' => 'dataDict', 'controller' => DictDataController::class], function ($router) {
             $router->get('/list', 'list');
         });
-        //queueMessage
+        /**
+         * queueMessage
+         */
         app('router')->group(['prefix' => 'queueMessage', 'controller' => QueueMessageController::class], function ($router) {
             $router->get('/receiveList', 'receiveList');
         });
-        //dept
+        /**
+         * dept
+         */
         app('router')->group(['prefix' => 'dept', 'controller' => DeptController::class], function ($router) {
             $router->get('/index', 'index');
             $router->get('/tree', 'tree');
         });
-        //role
+        /**
+         * role
+         */
         app('router')->group(['prefix' => 'role', 'controller' => RoleController::class], function ($router) {
             $router->get('/index', 'index');
             $router->get('/list', 'list');
         });
-        //post
+        /**
+         * post
+         */
         app('router')->group(['prefix' => 'post', 'controller' => PostController::class], function ($router) {
             $router->get('/list', 'list');
         });
-        //user
+        /**
+         * user
+         */
         app('router')->group(['prefix' => 'user', 'controller' => UserController::class], function ($router) {
             $router->get('/index', 'index');
+        });
+        /**
+         * menu
+         */
+        app('router')->group(['prefix' => 'menu', 'controller' => MenuController::class], function ($router) {
+            $router->get('/index', 'index');
+            $router->get('/tree', 'tree');
         });
     });
 }
