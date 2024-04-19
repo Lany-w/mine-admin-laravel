@@ -12,7 +12,6 @@ use Lany\MineAdmin\Traits\PageList;
 
 class SystemOperLog extends MineModel
 {
-    use PageList;
     protected $table = 'system_oper_log';
 
 

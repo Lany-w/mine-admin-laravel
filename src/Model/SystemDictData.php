@@ -14,7 +14,6 @@ use Lany\MineAdmin\Traits\PageList;
 class SystemDictData extends MineModel
 {
     use SoftDeletes;
-    use PageList;
     protected $table = 'system_dict_data';
 
     public function handleSearch(Builder $query, array $params): Builder

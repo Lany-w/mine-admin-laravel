@@ -116,7 +116,7 @@ trait PageList
     /**
      * 搜索处理器.
      */
-    public function handleSearch(Builder &$query, array $params): Builder
+    public function handleSearch(Builder $query, array $params): Builder
     {
         return $query;
     }

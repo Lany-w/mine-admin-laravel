@@ -14,12 +14,25 @@ use Lany\MineAdmin\Events\UserLoginBefore;
 use Lany\MineAdmin\Helper\MineCollection;
 use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
+use Lany\MineAdmin\Middlewares\MineAuth;
+use Lany\MineAdmin\Middlewares\MinePermission;
+use Lany\MineAdmin\Services\SystemDeptService;
 use Lany\MineAdmin\Services\SystemDictDataService;
+use Lany\MineAdmin\Services\SystemPostService;
+use Lany\MineAdmin\Services\SystemRoleService;
 use Lany\MineAdmin\Services\SystemUserService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
 
+    private array $middlewareAliases = [
+        'mine.auth' => MineAuth::class,
+        'mine.permission' => MinePermission::class
+    ];
+
+    private array $commands = [
+        InstallProjectCommand::class
+    ];
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/jwt.php', 'jwt');
@@ -29,6 +42,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     }
     public function boot(): void
     {
+        $this->aliasMiddleware();
         $this->loadRoutesFrom(__DIR__.'/route/route.php');
         $this->loadMigrationsFrom(__DIR__.'/Migrations');
         $this->loadTranslationsFrom(__DIR__.'/lang', 'mine');
@@ -40,18 +54,27 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     protected function registerCommand(): void
     {
         if ($this->app->runningInConsole()) {
-            $this->commands([
-                InstallProjectCommand::class
-            ]);
+            $this->commands($this->commands);
         }
     }
 
     protected function registerServices(): void
     {
+        //SystemUserService
         $this->app->singleton(SystemUserService::class, fn() =>  new SystemUserService());
         $this->app->alias(SystemUserService::class, 'SystemUserService');
+        //SystemDictDataService
         $this->app->singleton(SystemDictDataService::class, fn() =>  new SystemDictDataService());
         $this->app->alias(SystemDictDataService::class, 'SystemDictDataService');
+        //SystemDeptService
+        $this->app->singleton(SystemDeptService::class, fn() =>  new SystemDeptService());
+        $this->app->alias(SystemDeptService::class, 'SystemDeptService');
+        //SystemRoleService
+        $this->app->singleton(SystemRoleService::class, fn() =>  new SystemRoleService());
+        $this->app->alias(SystemRoleService::class, 'SystemRoleService');
+        //SystemPostService
+        $this->app->singleton(SystemPostService::class, fn() =>  new SystemPostService());
+        $this->app->alias(SystemPostService::class, 'SystemPostService');
     }
 
     protected function registerEvent(): void
@@ -81,5 +104,15 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     protected function loadAdminAuthConfig(): void
     {
         config(Arr::dot(config('mine_admin.auth', []), 'auth.'));
+    }
+
+    protected function aliasMiddleware(): void
+    {
+        $router = $this->app->make('router');
+
+        // register route middleware.
+        foreach ($this->middlewareAliases as $key => $middleware) {
+            $router->aliasMiddleware($key, $middleware);
+        }
     }
 }

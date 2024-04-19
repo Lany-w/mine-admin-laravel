@@ -50,4 +50,9 @@ class CommonController extends MineController
     {
         return $this->success(app(SystemOperLog::class)->getPageList($request->all()));
     }
+
+    public function getResourceList(Request $request): JsonResponse
+    {
+        return $this->success(app(SystemOperLog::class)->getPageList($request->all()));
+    }
 }

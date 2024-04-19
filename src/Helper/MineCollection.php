@@ -46,6 +46,29 @@ class MineCollection
             }
             return $this->toTree($routers);
         });
+
+        Collection::macro('toTree', function(array $data = [], int $parentId = 0, string $id = 'id', string $parentField = 'parent_id', string $children = 'children') {
+            $data = $data ?: $this->toArray();
+
+            if (empty($data)) {
+                return [];
+            }
+
+            $tree = [];
+
+            foreach ($data as $value) {
+                if ($value[$parentField] == $parentId) {
+                    $child = $this->toTree($data, $value[$id], $id, $parentField, $children);
+                    if (! empty($child)) {
+                        $value[$children] = $child;
+                    }
+                    array_push($tree, $value);
+                }
+            }
+
+            unset($data);
+            return $tree;
+        });
     }
 
     public static function setRouter(&$menu): array

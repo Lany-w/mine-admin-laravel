@@ -14,7 +14,6 @@ use Lany\MineAdmin\Traits\PageList;
 class SystemNotice extends MineModel
 {
     use SoftDeletes;
-    use PageList;
     protected $table = 'system_notice';
 
 

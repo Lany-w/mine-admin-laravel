@@ -9,10 +9,12 @@ namespace Lany\MineAdmin\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Lany\MineAdmin\Traits\PageList;
 
 class SystemRole extends MineModel
 {
     use SoftDeletes;
+    use PageList;
     protected $table = 'system_role';
 
     // 所有

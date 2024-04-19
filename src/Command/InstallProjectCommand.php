@@ -8,6 +8,7 @@
 namespace Lany\MineAdmin\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 use JetBrains\PhpStorm\NoReturn;
 use Lany\MineAdmin\Mine;
@@ -100,7 +101,7 @@ class InstallProjectCommand extends MineCommand
             $this->line(sprintf(' php version %s >>> %sOK!%s', PHP_VERSION, self::CONSOLE_GREEN_BEGIN, self::CONSOLE_END));
 
             $this->checkDb();
-
+            $this->checkRedis();
         }
     }
 
@@ -111,6 +112,25 @@ class InstallProjectCommand extends MineCommand
             exit;
         }
         $this->line(sprintf(' Database link >>> %sOK!%s', self::CONSOLE_GREEN_BEGIN, self::CONSOLE_END));
+    }
+
+    protected function checkRedis(): void
+    {
+        try {
+
+            if (!extension_loaded('redis')) {
+                $this->warn('请先安装redis扩展');
+                exit;
+            }
+
+            if (!Redis::ping()) {
+                throw new \Exception('请正确设置redis');
+            }
+            $this->line(sprintf(' Redis link >>> %sOK!%s', self::CONSOLE_GREEN_BEGIN, self::CONSOLE_END));
+        }catch (\Exception $e) {
+            $this->line(sprintf(' Redis link >>> %sNO!%s', self::CONSOLE_RED_BEGIN, self::CONSOLE_END));
+            exit;
+        }
     }
 
     protected function installLocalModule(): void

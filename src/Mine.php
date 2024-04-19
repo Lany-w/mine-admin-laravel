@@ -12,6 +12,8 @@ use Lany\MineAdmin\Controller\DataCenter\QueueMessageController;
 use Lany\MineAdmin\Controller\LoginController;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\StatefulGuard;
+use Lany\MineAdmin\Controller\Permission\DeptController;
+use Lany\MineAdmin\Controller\Permission\RoleController;
 
 class Mine
 {
@@ -59,44 +61,6 @@ class Mine
 
     public static function routes(): void
     {
-        $attributes = [
-            'prefix'     => 'system',
-            'middleware' => config('mine_admin.route.middleware', []),
-        ];
-
-        if (config('mine_admin.auth.enable', true)) {
-            app('router')->group($attributes, function ($router) {
-                $authController = config('mine_admin.auth.controller', LoginController::class);
-                $router->get('/getBingBackgroundImage', $authController.'@getBingBackgroundImage');
-                $router->post('/login', $authController.'@login');
-                $router->post('/logout', $authController.'@logout');
-                $router->get('/getInfo', $authController.'@getInfo');
-
-                app('router')->group([
-                    'prefix' => 'common',
-                    'controller' => CommonController::class
-                ], function ($router) {
-                    $router->get('/getNoticeList', 'getNoticeList');
-                    $router->get('/getLoginLogList', 'getLoginLogPageList');
-                    $router->get('/getOperationLogList', 'getOperLogPageList');
-                });
-
-                app('router')->group([
-                    'prefix' => 'dataDict',
-                    'controller' => DictDataController::class
-                ], function ($router) {
-                    $router->get('/list', 'list');
-                });
-
-                app('router')->group([
-                    'prefix' => 'queueMessage',
-                    'controller' => QueueMessageController::class
-                ], function ($router) {
-                    $router->get('/receiveList', 'receiveList');
-                });
-
-            });
-        }
 
     }
 

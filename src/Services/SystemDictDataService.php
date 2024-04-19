@@ -20,6 +20,9 @@ class SystemDictDataService
             'orderBy' => 'sort',
             'orderType' => 'desc',
         ];
-        return app(SystemDictData::class)->getList(array_merge($args, $params), $isScope);
+
+        return cache()->store('redis')->remember('system_dict_data_'. $params['code'], 600, function() use ($args, $params, $isScope) {
+           return  app(SystemDictData::class)->getList(array_merge($args, $params), $isScope);
+        });
     }
 }

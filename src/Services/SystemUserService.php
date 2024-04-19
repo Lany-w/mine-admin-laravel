@@ -59,6 +59,14 @@ class SystemUserService
         return $data;
     }
 
+    public function getPageList(?array $params = null, bool $isScope = true): array
+    {
+        if ($params['select'] ?? null) {
+            $params['select'] = explode(',', $params['select']);
+        }
+        return app(SystemUser::class)->getPageList($params, $isScope);
+    }
+
     /**
      * 过滤通过角色查询出来的菜单id列表，并去重.
      */

@@ -12,7 +12,6 @@ use Lany\MineAdmin\Traits\PageList;
 
 class SystemLoginLog extends MineModel
 {
-    use PageList;
     public $timestamps = false;
     public const SUCCESS = 1;
     public const FAIL = 2;

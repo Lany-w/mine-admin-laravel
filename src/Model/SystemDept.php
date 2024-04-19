@@ -9,12 +9,12 @@ namespace Lany\MineAdmin\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Lany\MineAdmin\Traits\UserDataScope;
 
 class SystemDept extends MineModel
 {
-    protected $table = 'system_dept';
     use SoftDeletes;
-
+    protected $table = 'system_dept';
 
     public function handleSearch(Builder $query, array $params): Builder
     {

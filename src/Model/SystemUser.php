@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Lany\MineAdmin\Traits\HasDateTimeFormatter;
+use Lany\MineAdmin\Traits\PageList;
+use Lany\MineAdmin\Traits\UserDataScope;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -39,7 +42,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  */
 class SystemUser extends Authenticatable implements JWTSubject
 {
-    use SoftDeletes;
+    use PageList, SoftDeletes, UserDataScope, HasDateTimeFormatter;
+
     protected $table = 'system_user';
 
     const SUPER_ADMIN_ID = 1;

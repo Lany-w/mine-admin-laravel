@@ -13,7 +13,6 @@ use Lany\MineAdmin\Traits\PageList;
 
 class SystemQueueMessage extends MineModel
 {
-    use PageList;
     protected $table = 'system_queue_message';
 
 
