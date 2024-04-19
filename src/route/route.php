@@ -51,6 +51,7 @@ if (config('mine_admin.auth.enable', true)) {
         });
         //dept
         app('router')->group(['prefix' => 'dept', 'controller' => DeptController::class], function ($router) {
+            $router->get('/index', 'index');
             $router->get('/tree', 'tree');
         });
         //role

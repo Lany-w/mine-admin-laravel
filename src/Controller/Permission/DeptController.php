@@ -13,6 +13,19 @@ use Lany\MineAdmin\Controller\MineController;
 
 class DeptController extends MineController
 {
+
+    /**
+     * Notes:部门树列表.
+     * User: Lany
+     * DateTime: 2024/4/19 13:48
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function index(Request $request): JsonResponse
+    {
+        return $this->success(app('SystemDeptService')->getTreeList($request->all()));
+    }
+
     /**
      * Notes:前端选择树（不需要权限）.
      * User: Lany

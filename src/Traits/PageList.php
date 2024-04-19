@@ -121,5 +121,21 @@ trait PageList
         return $query;
     }
 
+    /**
+     * 获取树列表.
+     */
+    public function getTreeList(
+        ?array $params = null,
+        bool $isScope = true,
+        string $id = 'id',
+        string $parentField = 'parent_id',
+        string $children = 'children'
+    ): array {
+        $params['_mineadmin_tree'] = true;
+        $params['_mineadmin_tree_pid'] = $parentField;
+        $data = $this->listQuerySetting($params, $isScope)->get();
+        return $data->toTree([], $data[0]->{$parentField} ?? 0, $id, $parentField, $children);
+    }
+
 
 }
