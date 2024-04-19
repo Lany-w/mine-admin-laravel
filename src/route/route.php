@@ -74,6 +74,7 @@ if (config('mine_admin.auth.enable', true)) {
          * post
          */
         app('router')->group(['prefix' => 'post', 'controller' => PostController::class], function ($router) {
+            $router->get('/index', 'index');
             $router->get('/list', 'list');
         });
         /**

@@ -11,6 +11,13 @@ use Lany\MineAdmin\Model\SystemPost;
 
 class SystemPostService
 {
+    public function getPageList(?array $params = null, bool $isScope = true): array
+    {
+        if ($params['select'] ?? null) {
+            $params['select'] = explode(',', $params['select']);
+        }
+        return app(SystemPost::class)->getPageList($params, $isScope);
+    }
     public function getList(?array $params = null, bool $isScope = true): array
     {
         if ($params['select'] ?? null) {

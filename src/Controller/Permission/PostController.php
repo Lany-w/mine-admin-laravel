@@ -14,6 +14,13 @@ use Lany\MineAdmin\Controller\MineController;
 class PostController extends MineController
 {
     /**
+     * 岗位分页列表
+     */
+    public function index(Request $request): JsonResponse
+    {
+        return $this->success(app('SystemPostService')->getPageList($request->all()));
+    }
+    /**
      * Notes:获取岗位列表
      * User: Lany
      * DateTime: 2024/4/12 14:29
