@@ -15,7 +15,8 @@ class UserLoginAfter
 
     public function __construct(
         public SystemUser $systemUser,
-        public bool|int $loginStatus
+        public bool|int $loginStatus,
+        public string $token
     )
     {
     }

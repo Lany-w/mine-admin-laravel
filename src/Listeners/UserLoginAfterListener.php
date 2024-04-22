@@ -6,12 +6,12 @@
  * DateTime: 2024/4/9 13:19
  */
 namespace Lany\MineAdmin\Listeners;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use JetBrains\PhpStorm\NoReturn;
 use Lany\MineAdmin\Events\UserLoginAfter;
-use Lany\MineAdmin\Events\UserLoginBefore;
 use Lany\MineAdmin\Helper\Ip2region;
 use Lany\MineAdmin\Model\SystemLoginLog;
+use Lany\MineAdmin\Model\SystemUser;
 
 class UserLoginAfterListener
 {
@@ -43,6 +43,19 @@ class UserLoginAfterListener
             'message' => $loginStatus === -1 ? t('jwt.user_ban') : ($loginStatus ? t('jwt.login_success') : t('jwt.login_error')),
             'login_time' => date('Y-m-d H:i:s'),
         ]);
+
+        $key = 'Token:'. $user->id;
+        Redis::del($key);
+
+        ($event->loginStatus > 0 && $event->token) && Redis::set($key, $event->token, 'ex',config('jwt.ttl') * 60);
+
+        if ($event->loginStatus > 0) {
+
+            SystemUser::query()->where('id', $user->id)->update([
+                'login_ip' => $ip,
+                'login_time' => date('Y-m-d H:i:s'),
+            ]);
+        }
     }
 
     private function os($agent): string

@@ -5,6 +5,7 @@
  * DateTime: 2024/4/10 10:46
  */
 namespace Lany\MineAdmin\Services;
+use Illuminate\Support\Facades\Redis;
 use Lany\MineAdmin\Events\UserLoginAfter;
 use Lany\MineAdmin\Exceptions\MineException;
 use Lany\MineAdmin\Exceptions\NormalStatusException;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 class SystemUserService extends SystemService
 {
     public string $model = SystemUser::class;
+
     public function login(): null|string
     {
         $model = new SystemUser();
@@ -27,7 +29,7 @@ class SystemUserService extends SystemService
                 || ($user->status == SystemUser::USER_BAN && $user->id == config('mine_admin.super_admin_id'))
             ) {
                 $token = Mine::guard()->login($user);
-                UserLoginAfter::dispatch($user, true);
+                UserLoginAfter::dispatch($user, true, $token);
                 return $token;
             }
 
@@ -72,5 +74,37 @@ class SystemUserService extends SystemService
         }
         unset($roleData);
         return array_unique($ids);
+    }
+
+    /**
+     * 获取在线用户.
+     */
+    public function getOnlineUserPageList(array $params = []): array
+    {
+
+        $key = config('database.redis.options.prefix').'Token:*';
+        //$jwt = $this->container->get(JWT::class);
+        //$blackList = $this->container->get(JWT::class)->blackList;
+        $userIds = [];
+        $iterator = null;
+        $params = [$iterator, $key, 100];
+        // 执行 SCAN 命令
+        do {
+            $users = Redis::command('SCAN', $params);
+            foreach ($users as $user) {
+                // 如果是已经加入到黑名单的就代表不是登录状态了
+                /*if (! $this->hasTokenBlack($redis->get($user)) && preg_match("/{$key}(\\d+)$/", $user, $match) && isset($match[1])) {
+                    $userIds[] = $match[1];
+                }*/
+                preg_match("/{$key}(\\d+)$/", $user, $match);
+                $userIds[] = $match[1];
+            }
+        } while ($iterator != 0);
+
+        if (empty($userIds)) {
+            return [];
+        }
+
+        return $this->getPageList(array_merge(['userIds' => $userIds], $params));
     }
 }
