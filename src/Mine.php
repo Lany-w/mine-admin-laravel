@@ -68,4 +68,5 @@ class Mine
     {
         return Auth::guard(config('mine_admin.auth.guard') ?: 'system');
     }
+
 }

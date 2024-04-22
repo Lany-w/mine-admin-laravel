@@ -22,3 +22,15 @@ if (!function_exists('user')) {
     }
 }
 
+
+if (! function_exists('is_in_container')) {
+    function is_in_container(): bool
+    {
+        if (! file_exists('/proc/self/mountinfo')) {
+            return false;
+        }
+        $mountinfo = file_get_contents('/proc/self/mountinfo');
+        return strpos($mountinfo, 'kubepods') > 0 || strpos($mountinfo, 'docker') > 0;
+    }
+}
+

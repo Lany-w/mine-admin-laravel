@@ -15,6 +15,7 @@ use Lany\MineAdmin\Controller\App\SystemAppGroupController;
 use Lany\MineAdmin\Controller\App\SystemAppController;
 use Lany\MineAdmin\Controller\Api\SystemApiGroupController;
 use Lany\MineAdmin\Controller\Api\SystemApiController;
+use Lany\MineAdmin\Controller\Monitor\ServerMonitorController;
 use Lany\MineAdmin\Controller\DataCenter\NoticeController;
 use Lany\MineAdmin\Controller\LoginController;
 use Lany\MineAdmin\Controller\Permission\DeptController;
@@ -147,6 +148,12 @@ if (config('mine_admin.auth.enable', true)) {
          */
         app('router')->group(['prefix' => 'api', 'controller' => SystemApiController::class], function ($router) {
             $router->get('/index', 'index');
+        });
+        /**
+         * server
+         */
+        app('router')->group(['prefix' => 'server', 'controller' => ServerMonitorController::class], function ($router) {
+            $router->get('/monitor', 'getServerInfo');
         });
     });
 }
