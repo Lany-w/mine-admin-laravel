@@ -8,6 +8,7 @@
 namespace Lany\MineAdmin\Services;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Lany\MineAdmin\Mine;
 
 class ServerMonitorService
@@ -255,7 +256,7 @@ class ServerMonitorService
     public function getPhpAndEnvInfo(): array
     {
         preg_match('/(\d\.\d\.\d)/', PHP_VERSION, $matches);
-        $result['swoole_version'] = 0.01;
+        $result['mysql_version'] = DB::connection()->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
 
         $result['php_version'] = PHP_VERSION;
 
@@ -269,7 +270,7 @@ class ServerMonitorService
 
         $result['mineadmin_version'] = Mine::getVersion();
 
-        $result['hyperf_version'] = Application::VERSION;
+        $result['laravel_version'] = Application::VERSION;
 
         return $result;
     }
