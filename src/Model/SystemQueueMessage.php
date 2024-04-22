@@ -7,10 +7,27 @@
 
 namespace Lany\MineAdmin\Model;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Lany\MineAdmin\Mine;
 use Lany\MineAdmin\Traits\PageList;
 
+/**
+ * @property int $id 主键
+ * @property int $content_id 内容ID
+ * @property string $content_type 内容类型
+ * @property string $title 消息标题
+ * @property int $send_by 发送人
+ * @property string $content 消息内容
+ * @property int $created_by 创建者
+ * @property int $updated_by 更新者
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
+ * @property string $remark 备注
+ * @property Collection|SystemUser[] $receiveUser
+ * @property SystemUser $sendUser
+ */
 class SystemQueueMessage extends MineModel
 {
     protected $table = 'system_queue_message';

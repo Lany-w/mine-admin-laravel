@@ -14,9 +14,9 @@ use Lany\MineAdmin\Model\SystemMenu;
 use Lany\MineAdmin\Model\SystemRole;
 use Lany\MineAdmin\Model\SystemUser;
 use Illuminate\Support\Facades\Hash;
-class SystemUserService
+class SystemUserService extends SystemService
 {
-
+    public string $model = SystemUser::class;
     public function login(): null|string
     {
         $model = new SystemUser();
@@ -57,14 +57,6 @@ class SystemUserService
         $data['user'] = $user->toArray();
 
         return $data;
-    }
-
-    public function getPageList(?array $params = null, bool $isScope = true): array
-    {
-        if ($params['select'] ?? null) {
-            $params['select'] = explode(',', $params['select']);
-        }
-        return app(SystemUser::class)->getPageList($params, $isScope);
     }
 
     /**

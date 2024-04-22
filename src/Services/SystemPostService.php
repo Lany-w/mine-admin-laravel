@@ -9,21 +9,8 @@ namespace Lany\MineAdmin\Services;
 
 use Lany\MineAdmin\Model\SystemPost;
 
-class SystemPostService
+class SystemPostService extends SystemService
 {
-    public function getPageList(?array $params = null, bool $isScope = true): array
-    {
-        if ($params['select'] ?? null) {
-            $params['select'] = explode(',', $params['select']);
-        }
-        return app(SystemPost::class)->getPageList($params, $isScope);
-    }
-    public function getList(?array $params = null, bool $isScope = true): array
-    {
-        if ($params['select'] ?? null) {
-            $params['select'] = explode(',', $params['select']);
-        }
-        $params['recycle'] = false;
-        return app(SystemPost::class)->getList($params, $isScope);
-    }
+    public string $model = SystemPost::class;
+
 }

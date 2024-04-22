@@ -12,21 +12,10 @@ use Illuminate\Support\Facades\DB;
 use Lany\MineAdmin\Mine;
 use Lany\MineAdmin\Model\SystemDept;
 
-class SystemDeptService
+class SystemDeptService extends SystemService
 {
+    public string $model = SystemDept::class;
 
-    /**
-     * 获取树列表.
-     */
-    public function getTreeList(?array $params = null, bool $isScope = true): array
-    {
-        $params = array_merge(['orderBy' => 'sort', 'orderType' => 'desc'], $params);
-        if ($params['select'] ?? null) {
-            $params['select'] = explode(',', $params['select']);
-        }
-        $params['recycle'] = false;
-        return app(SystemDept::class)->getTreeList($params, $isScope);
-    }
 
     /**
      * 获取前端选择树.

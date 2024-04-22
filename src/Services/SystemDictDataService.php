@@ -10,8 +10,9 @@ namespace Lany\MineAdmin\Services;
 use Lany\MineAdmin\Model\MineModel;
 use Lany\MineAdmin\Model\SystemDictData;
 
-class SystemDictDataService
+class SystemDictDataService extends SystemService
 {
+    public string $model = SystemDictData::class;
     public function getList(?array $params = null, bool $isScope = false): array
     {
         $args = [
@@ -22,7 +23,7 @@ class SystemDictDataService
         ];
 
         return cache()->store('redis')->remember('system_dict_data_'. $params['code'], 600, function() use ($args, $params, $isScope) {
-           return  app(SystemDictData::class)->getList(array_merge($args, $params), $isScope);
+           return  app($this->model)->getList(array_merge($args, $params), $isScope);
         });
     }
 }

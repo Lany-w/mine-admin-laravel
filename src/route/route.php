@@ -8,6 +8,9 @@
 use Lany\MineAdmin\Controller\CommonController;
 use Lany\MineAdmin\Controller\DataCenter\DictDataController;
 use Lany\MineAdmin\Controller\DataCenter\QueueMessageController;
+use Lany\MineAdmin\Controller\DataCenter\DictTypeController;
+use Lany\MineAdmin\Controller\DataCenter\AttachmentController;
+use Lany\MineAdmin\Controller\DataCenter\DataMaintainController;
 use Lany\MineAdmin\Controller\LoginController;
 use Lany\MineAdmin\Controller\Permission\DeptController;
 use Lany\MineAdmin\Controller\Permission\RoleController;
@@ -89,6 +92,24 @@ if (config('mine_admin.auth.enable', true)) {
         app('router')->group(['prefix' => 'menu', 'controller' => MenuController::class], function ($router) {
             $router->get('/index', 'index');
             $router->get('/tree', 'tree');
+        });
+        /**
+         * dictType
+         */
+        app('router')->group(['prefix' => 'dictType', 'controller' => DictTypeController::class], function ($router) {
+            $router->get('/index', 'index');
+        });
+        /**
+         * attachment
+         */
+        app('router')->group(['prefix' => 'attachment', 'controller' => AttachmentController::class], function ($router) {
+            $router->get('/index', 'index');
+        });
+        /**
+         * dataMaintain
+         */
+        app('router')->group(['prefix' => 'dataMaintain', 'controller' => DataMaintainController::class], function ($router) {
+            $router->get('/index', 'index');
         });
     });
 }

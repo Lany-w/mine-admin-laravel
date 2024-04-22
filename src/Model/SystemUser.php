@@ -6,6 +6,7 @@
  * DateTime: 2024/4/9 13:29
  */
 namespace Lany\MineAdmin\Model;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

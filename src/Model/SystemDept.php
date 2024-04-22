@@ -7,15 +7,31 @@
 
 namespace Lany\MineAdmin\Model;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Lany\MineAdmin\Traits\PageList;
-use Lany\MineAdmin\Traits\UserDataScope;
+use Illuminate\Support\Collection;
 
+/**
+ * @property int $id 主键
+ * @property int $parent_id 父ID
+ * @property string $level 组级集合
+ * @property string $name 部门名称
+ * @property string $leader 负责人
+ * @property string $phone 联系电话
+ * @property int $status 状态 (1正常 2停用)
+ * @property int $sort 排序
+ * @property int $created_by 创建者
+ * @property int $updated_by 更新者
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
+ * @property string $deleted_at 删除时间
+ * @property string $remark 备注
+ * @property Collection|SystemRole[] $roles
+ */
 class SystemDept extends MineModel
 {
     use SoftDeletes;
-    use PageList;
     protected $table = 'system_dept';
 
     public function handleSearch(Builder $query, array $params): Builder

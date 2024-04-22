@@ -6,15 +6,33 @@
  */
 
 namespace Lany\MineAdmin\Model;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Lany\MineAdmin\Traits\PageList;
+use Illuminate\Support\Collection;
 
+
+/**
+ * @property int $id 主键
+ * @property string $name 角色名称
+ * @property string $code 角色代码
+ * @property int $data_scope 数据范围（1：全部数据权限 2：自定义数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：本人数据权限）
+ * @property int $status 状态 (1正常 2停用)
+ * @property int $sort 排序
+ * @property int $created_by 创建者
+ * @property int $updated_by 更新者
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
+ * @property string $deleted_at 删除时间
+ * @property string $remark 备注
+ * @property Collection|SystemDept[] $depts
+ * @property Collection|SystemMenu[] $menus
+ * @property Collection|SystemUser[] $users
+ */
 class SystemRole extends MineModel
 {
     use SoftDeletes;
-    use PageList;
     protected $table = 'system_role';
 
     // 所有

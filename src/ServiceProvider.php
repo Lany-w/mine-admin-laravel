@@ -22,6 +22,9 @@ use Lany\MineAdmin\Services\SystemPostService;
 use Lany\MineAdmin\Services\SystemRoleService;
 use Lany\MineAdmin\Services\SystemUserService;
 use Lany\MineAdmin\Services\SystemMenuService;
+use Lany\MineAdmin\Services\SystemDictTypeService;
+use Lany\MineAdmin\Services\SystemUploadFileService;
+use Lany\MineAdmin\Services\DataMaintainService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -79,6 +82,15 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         //SystemMenuService
         $this->app->singleton(SystemMenuService::class, fn() =>  new SystemMenuService());
         $this->app->alias(SystemMenuService::class, 'SystemMenuService');
+        //SystemDictTypeService
+        $this->app->singleton(SystemDictTypeService::class, fn() =>  new SystemDictTypeService());
+        $this->app->alias(SystemDictTypeService::class, 'SystemDictTypeService');
+        //SystemUploadFileService
+        $this->app->singleton(SystemUploadFileService::class, fn() =>  new SystemUploadFileService());
+        $this->app->alias(SystemUploadFileService::class, 'SystemUploadFileService');
+        //DataMaintainService
+        $this->app->singleton(DataMaintainService::class, fn() =>  new DataMaintainService());
+        $this->app->alias(DataMaintainService::class, 'DataMaintainService');
     }
 
     protected function registerEvent(): void
