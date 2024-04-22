@@ -11,6 +11,7 @@ use Lany\MineAdmin\Controller\DataCenter\QueueMessageController;
 use Lany\MineAdmin\Controller\DataCenter\DictTypeController;
 use Lany\MineAdmin\Controller\DataCenter\AttachmentController;
 use Lany\MineAdmin\Controller\DataCenter\DataMaintainController;
+use Lany\MineAdmin\Controller\DataCenter\NoticeController;
 use Lany\MineAdmin\Controller\LoginController;
 use Lany\MineAdmin\Controller\Permission\DeptController;
 use Lany\MineAdmin\Controller\Permission\RoleController;
@@ -109,6 +110,18 @@ if (config('mine_admin.auth.enable', true)) {
          * dataMaintain
          */
         app('router')->group(['prefix' => 'dataMaintain', 'controller' => DataMaintainController::class], function ($router) {
+            $router->get('/index', 'index');
+        });
+        /**
+         * notice
+         */
+        app('router')->group(['prefix' => 'notice', 'controller' => NoticeController::class], function ($router) {
+            $router->get('/index', 'index');
+        });
+        /**
+         * appGroup
+         */
+        app('router')->group(['prefix' => 'appGroup', 'controller' => NoticeController::class], function ($router) {
             $router->get('/index', 'index');
         });
     });

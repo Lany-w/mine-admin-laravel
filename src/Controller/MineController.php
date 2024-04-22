@@ -6,10 +6,10 @@
  */
 namespace Lany\MineAdmin\Controller;
 
-
-use Illuminate\Support\Facades\Auth;
 use Lany\MineAdmin\Mine;
 use Lany\MineAdmin\Traits\ControllerTrait;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Auth\StatefulGuard;
 
 /**
  * 后台控制器基类
@@ -18,8 +18,14 @@ use Lany\MineAdmin\Traits\ControllerTrait;
 abstract class MineController
 {
     use ControllerTrait;
+    protected mixed $request;
 
-    protected function guard(): \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard
+    public function __construct()
+    {
+        $this->request = request();
+    }
+
+    protected function guard(): Guard|StatefulGuard
     {
         return Mine::guard();
     }
