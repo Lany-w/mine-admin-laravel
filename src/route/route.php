@@ -11,6 +11,10 @@ use Lany\MineAdmin\Controller\DataCenter\QueueMessageController;
 use Lany\MineAdmin\Controller\DataCenter\DictTypeController;
 use Lany\MineAdmin\Controller\DataCenter\AttachmentController;
 use Lany\MineAdmin\Controller\DataCenter\DataMaintainController;
+use Lany\MineAdmin\Controller\App\SystemAppGroupController;
+use Lany\MineAdmin\Controller\App\SystemAppController;
+use Lany\MineAdmin\Controller\Api\SystemApiGroupController;
+use Lany\MineAdmin\Controller\Api\SystemApiController;
 use Lany\MineAdmin\Controller\DataCenter\NoticeController;
 use Lany\MineAdmin\Controller\LoginController;
 use Lany\MineAdmin\Controller\Permission\DeptController;
@@ -121,7 +125,27 @@ if (config('mine_admin.auth.enable', true)) {
         /**
          * appGroup
          */
-        app('router')->group(['prefix' => 'appGroup', 'controller' => NoticeController::class], function ($router) {
+        app('router')->group(['prefix' => 'appGroup', 'controller' => SystemAppGroupController::class], function ($router) {
+            $router->get('/index', 'index');
+            $router->get('/list', 'list');
+        });
+        /**
+         * app
+         */
+        app('router')->group(['prefix' => 'app', 'controller' => SystemAppController::class], function ($router) {
+            $router->get('/index', 'index');
+        });
+        /**
+         * apiGroup
+         */
+        app('router')->group(['prefix' => 'apiGroup', 'controller' => SystemApiGroupController::class], function ($router) {
+            $router->get('/index', 'index');
+            $router->get('/list', 'list');
+        });
+        /**
+         * api
+         */
+        app('router')->group(['prefix' => 'api', 'controller' => SystemApiController::class], function ($router) {
             $router->get('/index', 'index');
         });
     });

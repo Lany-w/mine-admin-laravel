@@ -2,18 +2,18 @@
 /**
  * Notes:
  * User: Lany
- * DateTime: 2024/4/22 10:03
+ * DateTime: 2024/4/22 12:56
  */
 
-namespace Lany\MineAdmin\Controller\App;
+namespace Lany\MineAdmin\Controller\Api;
 
 use Illuminate\Http\JsonResponse;
 use Lany\MineAdmin\Controller\MineController;
-use Lany\MineAdmin\Services\SystemAppGroupService;
+use Lany\MineAdmin\Services\SystemApiGroupService;
 
-class SystemAppGroupController extends MineController
+class SystemApiGroupController extends MineController
 {
-    protected SystemAppGroupService $service;
+    protected SystemApiGroupService $service;
 
     /**
      * 列表.
@@ -28,6 +28,6 @@ class SystemAppGroupController extends MineController
      */
     public function list(): JsonResponse
     {
-        return $this->success($this->service->getList());
+        return $this->success($this->service->getList($this->request->all()));
     }
 }

@@ -27,6 +27,7 @@ use Lany\MineAdmin\Services\SystemUploadFileService;
 use Lany\MineAdmin\Services\DataMaintainService;
 use Lany\MineAdmin\Services\SystemNoticeService;
 use Lany\MineAdmin\Services\SystemAppGroupService;
+use Lany\MineAdmin\Services\SystemAppService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -96,9 +97,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         //SystemNoticeService
         $this->app->singleton(SystemNoticeService::class, fn() =>  new SystemNoticeService());
         $this->app->alias(SystemNoticeService::class, 'SystemNoticeService');
-        //SystemNoticeService
+        //SystemAppGroupService
         $this->app->singleton(SystemAppGroupService::class, fn() =>  new SystemAppGroupService());
         $this->app->alias(SystemAppGroupService::class, 'SystemAppGroupService');
+        //SystemAppService
+        $this->app->singleton(SystemAppService::class, fn() =>  new SystemAppService());
+        $this->app->alias(SystemAppService::class, 'SystemAppService');
     }
 
     protected function registerEvent(): void
