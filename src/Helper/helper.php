@@ -34,3 +34,10 @@ if (! function_exists('is_in_container')) {
     }
 }
 
+if (!function_exists('redis')) {
+    function redis()
+    {
+        return app('redis');
+    }
+}
+

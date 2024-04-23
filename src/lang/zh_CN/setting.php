@@ -19,15 +19,13 @@ declare(strict_types=1);
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
 return [
-    'no_login' => 'The user is abnormal or not logged in, please log in again',
-    'token_blacklist' => 'Token has been blacklisted, please login again',
-    'validate_fail' => 'Token verification failed. It may be expired or in the blacklist',
-    'no_token' => 'The token is illegal or does not exist',
-
-    'login_success' => 'Login successful',
-    'login_error' => 'User does not exist password is incorrect',
-    'user_ban' => 'User disabled',
-    'code_error' => 'Verification code error or expired',
-    'unknown_error' => 'unknown error',
-    'unknown' => 'unknown',
+    'gen_code_edit' => '请先编辑配置生成信息',
+    'gen_model_error' => '生成模型错误，请检查模块与表名称是否匹配',
+    'preview' => [
+        'not_found_table' => '找不到表名',
+    ],
+    'names_type_error' => '给定的数据类型错误',
+    'auto_from' => [
+        'table_not_found' => '表找不到',
+    ],
 ];

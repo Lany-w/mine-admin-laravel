@@ -27,9 +27,6 @@ trait PageList
      */
     public function getPageList(?array $params = [], bool $isScope = true, string $pageName = 'page'): array
     {
-        if ($params['select'] ?? null) {
-            $params['select'] = explode(',', $params['select']);
-        }
         $paginate = $this->listQuerySetting($params, $isScope)->paginate(
             (int) ($params['pageSize'] ?? self::PAGE_SIZE),
             ['*'],
