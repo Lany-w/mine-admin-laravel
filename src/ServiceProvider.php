@@ -16,18 +16,6 @@ use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
 use Lany\MineAdmin\Middlewares\MineAuth;
 use Lany\MineAdmin\Middlewares\MinePermission;
-use Lany\MineAdmin\Services\SystemDeptService;
-use Lany\MineAdmin\Services\SystemDictDataService;
-use Lany\MineAdmin\Services\SystemPostService;
-use Lany\MineAdmin\Services\SystemRoleService;
-use Lany\MineAdmin\Services\SystemUserService;
-use Lany\MineAdmin\Services\SystemMenuService;
-use Lany\MineAdmin\Services\SystemDictTypeService;
-use Lany\MineAdmin\Services\SystemUploadFileService;
-use Lany\MineAdmin\Services\DataMaintainService;
-use Lany\MineAdmin\Services\SystemNoticeService;
-use Lany\MineAdmin\Services\SystemAppGroupService;
-use Lany\MineAdmin\Services\SystemAppService;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -67,42 +55,15 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     protected function registerServices(): void
     {
-        //SystemUserService
-        $this->app->singleton(SystemUserService::class, fn() =>  new SystemUserService());
-        $this->app->alias(SystemUserService::class, 'SystemUserService');
-        //SystemDictDataService
-        $this->app->singleton(SystemDictDataService::class, fn() =>  new SystemDictDataService());
-        $this->app->alias(SystemDictDataService::class, 'SystemDictDataService');
-        //SystemDeptService
-        $this->app->singleton(SystemDeptService::class, fn() =>  new SystemDeptService());
-        $this->app->alias(SystemDeptService::class, 'SystemDeptService');
-        //SystemRoleService
-        $this->app->singleton(SystemRoleService::class, fn() =>  new SystemRoleService());
-        $this->app->alias(SystemRoleService::class, 'SystemRoleService');
-        //SystemPostService
-        $this->app->singleton(SystemPostService::class, fn() =>  new SystemPostService());
-        $this->app->alias(SystemPostService::class, 'SystemPostService');
-        //SystemMenuService
-        $this->app->singleton(SystemMenuService::class, fn() =>  new SystemMenuService());
-        $this->app->alias(SystemMenuService::class, 'SystemMenuService');
-        //SystemDictTypeService
-        $this->app->singleton(SystemDictTypeService::class, fn() =>  new SystemDictTypeService());
-        $this->app->alias(SystemDictTypeService::class, 'SystemDictTypeService');
-        //SystemUploadFileService
-        $this->app->singleton(SystemUploadFileService::class, fn() =>  new SystemUploadFileService());
-        $this->app->alias(SystemUploadFileService::class, 'SystemUploadFileService');
-        //DataMaintainService
-        $this->app->singleton(DataMaintainService::class, fn() =>  new DataMaintainService());
-        $this->app->alias(DataMaintainService::class, 'DataMaintainService');
-        //SystemNoticeService
-        $this->app->singleton(SystemNoticeService::class, fn() =>  new SystemNoticeService());
-        $this->app->alias(SystemNoticeService::class, 'SystemNoticeService');
-        //SystemAppGroupService
-        $this->app->singleton(SystemAppGroupService::class, fn() =>  new SystemAppGroupService());
-        $this->app->alias(SystemAppGroupService::class, 'SystemAppGroupService');
-        //SystemAppService
-        $this->app->singleton(SystemAppService::class, fn() =>  new SystemAppService());
-        $this->app->alias(SystemAppService::class, 'SystemAppService');
+        $files = glob(__DIR__.'/services/*');
+
+        foreach($files as $file) {
+            $fileName = pathinfo($file,PATHINFO_FILENAME);
+            $class = __NAMESPACE__ . "\\Services\\$fileName";
+            $this->app->singleton($class, fn() =>  new $class());
+            $this->app->alias($class, $fileName);
+        }
+
     }
 
     protected function registerEvent(): void

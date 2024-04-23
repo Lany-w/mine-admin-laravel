@@ -25,6 +25,7 @@ use Lany\MineAdmin\Controller\Permission\RoleController;
 use Lany\MineAdmin\Controller\Permission\PostController;
 use Lany\MineAdmin\Controller\Permission\UserController;
 use Lany\MineAdmin\Controller\Permission\MenuController;
+use Lany\MineAdmin\Controller\Logs\LogsController;
 use Lany\MineAdmin\Mine;
 
 
@@ -168,6 +169,15 @@ if (config('mine_admin.auth.enable', true)) {
          */
         app('router')->group(['prefix' => 'cache', 'controller' => CacheMonitorController::class], function ($router) {
             $router->get('/monitor', 'getCacheInfo');
+        });
+        /**
+         * logs
+         */
+        app('router')->group(['prefix' => 'logs', 'controller' => LogsController::class], function ($router) {
+            $router->get('/getLoginLogPageList', 'getLoginLogPageList');
+            $router->get('/getOperLogPageList', 'getOperLogPageList');
+            $router->get('/getApiLogPageList', 'getApiLogPageList');
+            $router->get('/getQueueLogPageList', 'getQueueLogPageList');
         });
     });
 }

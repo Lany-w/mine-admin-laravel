@@ -7,6 +7,7 @@
 namespace Lany\MineAdmin\Controller;
 
 use AllowDynamicProperties;
+use Illuminate\Support\Str;
 use Lany\MineAdmin\Mine;
 use Lany\MineAdmin\Traits\ControllerTrait;
 use Illuminate\Contracts\Auth\Guard;
@@ -28,10 +29,16 @@ use ReflectionException;
     public function __construct()
     {
         $this->request = request();
-        if (property_exists($this, 'service')) {
-            $ref = new \ReflectionProperty($this, 'service');
+
+        $refClass = new \ReflectionClass($this);
+
+        foreach($refClass->getProperties() as $property) {
+            $serviceName = $property->getName();
+            if (!Str::contains(strtolower($serviceName), 'service')) continue;
+            $ref = new \ReflectionProperty($this, $serviceName);
+            if (!$ref->getType()) continue;
             $serviceClass = new \ReflectionClass($ref->getType()->getName());
-            $this->service = $serviceClass->newInstance();
+            $this->$serviceName = $serviceClass->newInstance();
         }
     }
 
