@@ -33,6 +33,17 @@ class SettingConfig extends MineModel
     protected $table = 'setting_config';
 
     /**
+     * 按Key获取配置.
+     */
+    public function getConfigByKey(string $key): array
+    {
+        $model = self::query()->find($key, [
+            'group_id', 'name', 'key', 'value', 'sort', 'input_type', 'config_select_data',
+        ]);
+        return $model ? $model->toArray() : [];
+    }
+
+    /**
      * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder

@@ -218,7 +218,7 @@ class SystemMenuSeeder extends Seeder
                 "INSERT INTO \"{$model}\" VALUES (2710, 2700, '0,2000,2700', '系统公告导出', 'system:notice:export', NULL, NULL, NULL, NULL, '1', 'B', 1, 0, NULL, NULL, '2021-12-25 18:10:20', '2021-12-25 18:10:20', NULL, NULL)",
                 "INSERT INTO \"{$model}\" VALUES (4104, 4100, '0,4000,4100', '模块启停用', 'setting:module:status', NULL, NULL, NULL, NULL, '1', 'B', 1, 0, NULL, NULL, '2022-02-13 18:10:20', '2022-02-13 18:10:20', NULL, NULL)",
                 "INSERT INTO \"{$model}\" VALUES (4105, 4100, '0,4000,4100', '安装模块', 'setting:module:install', NULL, NULL, NULL, NULL, '1', 'B', 1, 0, NULL, NULL, '2022-02-13 18:10:20', '2022-02-13 18:10:20', NULL, NULL)",
-                "INSERT INTO \"{$model}\" VALUES (4600, 4000, '0,4000', '系统接口', 'systemInterface', 'icon-compass', 'systemInterface', 'setting/systemInterface/index', NULL, '2', 'M', 1, 0, NULL, NULL, '2022-03-30 10:00:28', '2022-03-30 10:00:28', NULL, NULL)",
+                /*"INSERT INTO \"{$model}\" VALUES (4600, 4000, '0,4000', '系统接口', 'systemInterface', 'icon-compass', 'systemInterface', 'setting/systemInterface/index', NULL, '2', 'M', 1, 0, NULL, NULL, '2022-03-30 10:00:28', '2022-03-30 10:00:28', NULL, NULL)",*/
             ];
         }
         return [
@@ -418,7 +418,7 @@ class SystemMenuSeeder extends Seeder
             "INSERT INTO `{$model}` VALUES (2710, 2700, '0,2000,2700', '系统公告导出', 'system:notice:export', NULL, NULL, NULL, NULL, '1', 'B', 1, 0, NULL, NULL, '2021-12-25 18:10:20', '2021-12-25 18:10:20', NULL, NULL)",
             "INSERT INTO `{$model}` VALUES (4104, 4100, '0,4000,4100', '模块启停用', 'setting:module:status', NULL, NULL, NULL, NULL, '1', 'B', 1, 0, NULL, NULL, '2022-02-13 18:10:20', '2022-02-13 18:10:20', NULL, NULL)",
             "INSERT INTO `{$model}` VALUES (4105, 4100, '0,4000,4100', '安装模块', 'setting:module:install', NULL, NULL, NULL, NULL, '1', 'B', 1, 0, NULL, NULL, '2022-02-13 18:10:20', '2022-02-13 18:10:20', NULL, NULL)",
-            "INSERT INTO `{$model}` VALUES (4600, 4000, '0,4000', '系统接口', 'systemInterface', 'icon-compass', 'systemInterface', 'setting/systemInterface/index', NULL, '2', 'M', 1, 0, NULL, NULL, '2022-03-30 10:00:28', '2022-03-30 10:00:28', NULL, NULL)",
+            /*"INSERT INTO `{$model}` VALUES (4600, 4000, '0,4000', '系统接口', 'systemInterface', 'icon-compass', 'systemInterface', 'setting/systemInterface/index', NULL, '2', 'M', 1, 0, NULL, NULL, '2022-03-30 10:00:28', '2022-03-30 10:00:28', NULL, NULL)",*/
         ];
     }
 }

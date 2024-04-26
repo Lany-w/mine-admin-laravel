@@ -31,6 +31,7 @@ use Lany\MineAdmin\Controller\Tools\GenerateCodeController;
 use Lany\MineAdmin\Controller\Setting\SystemConfigGroupController;
 use Lany\MineAdmin\Controller\Setting\SystemConfigController;
 use Lany\MineAdmin\Controller\Tools\CrontabController;
+use Lany\MineAdmin\Controller\UploadController;
 use Lany\MineAdmin\Mine;
 
 
@@ -49,6 +50,7 @@ app('router')->group($attributes, function ($router) use($authController) {
 
     app('router')->get('/getBingBackgroundImage', $authController.'@getBingBackgroundImage')->withoutMiddleware(['mine.auth', 'mine.permission']);
     app('router')->post('/login', $authController.'@login')->withoutMiddleware(['mine.auth', 'mine.permission']);
+    $router->post('uploadImage', [UploadController::class, 'uploadImage']);
     $router->post('/logout', $authController.'@logout');
     $router->get('/getInfo', $authController.'@getInfo');
     /**

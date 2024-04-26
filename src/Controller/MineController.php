@@ -38,7 +38,17 @@ use ReflectionException;
             $ref = new \ReflectionProperty($this, $serviceName);
             if (!$ref->getType()) continue;
             $serviceClass = new \ReflectionClass($ref->getType()->getName());
-            $this->$serviceName = $serviceClass->newInstance();
+            $constructor = $serviceClass->getConstructor();
+            $parameters = $constructor->getParameters();
+            $params = [];
+            foreach($parameters as $parameter) {
+                if ($parameter->getClass()) {
+                    $params[] = $parameter->getClass()->newInstance();
+                }
+                //$params[] = app($param->getType()->getName());
+            }
+
+            $this->$serviceName = $serviceClass->newInstanceArgs($params);
         }
     }
 

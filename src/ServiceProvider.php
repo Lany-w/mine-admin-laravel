@@ -12,6 +12,7 @@ use Lany\MineAdmin\Command\InstallProjectCommand;
 use Lany\MineAdmin\Events\UserLoginAfter;
 use Lany\MineAdmin\Events\UserLoginBefore;
 use Lany\MineAdmin\Helper\MineCollection;
+use Lany\MineAdmin\Helper\MineUpload;
 use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
 use Lany\MineAdmin\Middlewares\MineAuth;
@@ -55,6 +56,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     protected function registerServices(): void
     {
+        $this->app->singleton(MineUpload::class, fn() =>  new MineUpload());
+
         $files = glob(__DIR__.'/services/*');
 
         foreach($files as $file) {

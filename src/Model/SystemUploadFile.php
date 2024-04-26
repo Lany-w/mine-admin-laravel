@@ -9,8 +9,8 @@ namespace Lany\MineAdmin\Model;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Lany\MineAdmin\Traits\PageList;
 
 /**
  * @property int $id 主键
@@ -35,6 +35,23 @@ class SystemUploadFile extends MineModel
 {
     use SoftDeletes;
     protected $table = 'system_uploadfile';
+
+    /**
+     * 通过hash获取上传文件的信息.
+     * @param string $hash
+     * @param array $columns
+     * @return Model|Builder|null
+     */
+    public function getFileInfoByHash(string $hash, array $columns = ['*']): Model|Builder|null
+    {
+        $model = self::query()->where('hash', $hash)->first($columns);
+        if (!$model) {
+            $model = self::withTrashed()->where('hash', $hash)->first(['id']);
+            $model && $model->forceDelete();
+            return null;
+        }
+        return $model;
+    }
 
     public function handleSearch(Builder $query, array $params): Builder
     {
