@@ -34,7 +34,7 @@ class MineUpload
         $filename = $this->getNewName() . '.' . Str::lower($uploadedFile->getClientOriginalExtension());
 
         try {
-            Storage::putFileAs($path, $uploadedFile, $filename);
+            Storage::disk('public')->putFileAs($path, $uploadedFile, $filename);
         } catch (\Exception $e) {
             throw new NormalStatusException((string) $e->getMessage(), 500);
         }
@@ -71,7 +71,7 @@ class MineUpload
     }
 
 
-    protected function getPath(?string $path = null, bool $isContainRoot = false): string
+    public function getPath(?string $path = null, bool $isContainRoot = false): string
     {
         $uploadfile = $isContainRoot ? '/' . env('UPLOAD_PATH', 'uploadfile') . '/' : '';
         return empty($path) ? $uploadfile . date('Ymd') : $uploadfile . $path;

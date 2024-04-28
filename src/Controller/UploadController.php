@@ -29,4 +29,20 @@ class UploadController extends MineController
         }
         return $this->error(t('system.upload_image_verification_fail'));
     }
+
+    /**
+     * 通过HASH获取文件信息.
+     */
+    public function getFileInfoByHash(): JsonResponse
+    {
+        return $this->success($this->service->readByHash($this->request->input('hash', null)) ?? []);
+    }
+
+    /**
+     * 输出图片、文件.
+     */
+    public function showFile(string $hash): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return $this->service->responseFile($hash);
+    }
 }

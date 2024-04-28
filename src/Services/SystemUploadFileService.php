@@ -8,8 +8,7 @@
 namespace Lany\MineAdmin\Services;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Str;
-use Lany\MineAdmin\Events\UploadAfter;
+use Illuminate\Support\Facades\Storage;
 use Lany\MineAdmin\Exceptions\NormalStatusException;
 use Lany\MineAdmin\Helper\MineUpload;
 use Lany\MineAdmin\Model\SystemUploadFile;
@@ -49,6 +48,27 @@ class SystemUploadFileService extends SystemService
         }
 
         return [];
+    }
+
+    /**
+     * 通过hash获取文件信息.
+     */
+    public function readByHash(string $hash, array $columns = ['*']): mixed
+    {
+        return app($this->model)->getFileInfoByHash($hash, $columns);
+    }
+
+
+    public function responseFile(string $hash)
+    {
+        $model = $this->readByHash($hash, ['url', 'mime_type']);
+        if (! $model) {
+            throw new NormalStatusException('文件不存在', 500);
+        }
+
+        return response()->file(Storage::disk('public')->path($this->mineUpload->getStorageMode() == '1'
+            ? str_replace(env('UPLOAD_PATH', 'uploadfile'), '', $model->url)
+            : $model->url));
     }
 
 

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\Fluent\Concerns\Has;
 use Lany\MineAdmin\Traits\HasDateTimeFormatter;
 use Lany\MineAdmin\Traits\PageList;
 use Lany\MineAdmin\Traits\UserDataScope;
@@ -71,6 +73,24 @@ class SystemUser extends Authenticatable implements JWTSubject
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(SystemRole::class, 'system_user_role', 'user_id', 'role_id');
+    }
+
+    public function checkPass(string $password, string $hash): bool
+    {
+        return Hash::check($password, $hash);
+    }
+
+    /**
+     * 初始化用户密码
+     */
+    public function initUserPassword(int $id, string $password): bool
+    {
+        $model = self::find($id);
+        if ($model) {
+            $model->password = Hash::make($password);
+            return $model->save();
+        }
+        return false;
     }
 
 

@@ -36,7 +36,7 @@ class SystemUserService extends SystemService
             UserLoginAfter::dispatch($user, -1);
             throw new UserBanException();
         }
-        UserLoginAfter::dispatch($user, false);
+        UserLoginAfter::dispatch($user, false, '');
         throw new NormalStatusException();
     }
     public function getInfo(): array
@@ -106,5 +106,56 @@ class SystemUserService extends SystemService
         }
 
         return $this->getPageList(array_merge(['userIds' => $userIds], $params));
+    }
+
+    /**
+     * 用户更新个人资料.
+     */
+    public function updateInfo(array $params): bool
+    {
+        if (! isset($params['id'])) {
+            return false;
+        }
+
+        $model = app($this->model)::find($params['id']);
+        unset($params['id'], $params['password']);
+        foreach ($params as $key => $param) {
+            $model[$key] = $param;
+        }
+
+        $this->clearCache((string) $model['id']);
+        return $model->save();
+    }
+
+    /**
+     * 用户修改密码
+     */
+    public function modifyPassword(array $params): bool
+    {
+        return app($this->model)->initUserPassword(user()->getId(), $params['newPassword']);
+    }
+
+    /**
+     * 清除用户缓存.
+     */
+    public function clearCache(string $id): bool
+    {
+        $redis = redis();
+        $prefix = config('cache.prefix');
+
+        $iterator = null;
+        do {
+            $configKey = Redis::command('SCAN', [$iterator, $prefix . 'config:*', 100]);
+            $redis->del($configKey);
+        } while ($iterator != 0);
+
+        do {
+            $dictKey = Redis::command('SCAN', [$iterator, $prefix . 'system:dict:*', 100]);
+            $redis->del($dictKey);
+        } while ($iterator != 0);
+
+        $redis->del($prefix . 'crontab', $prefix . 'modules');
+
+        return $redis->del("{$prefix}loginInfo:userId_{$id}") > 0;
     }
 }

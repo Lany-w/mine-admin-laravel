@@ -51,6 +51,8 @@ app('router')->group($attributes, function ($router) use($authController) {
     app('router')->get('/getBingBackgroundImage', $authController.'@getBingBackgroundImage')->withoutMiddleware(['mine.auth', 'mine.permission']);
     app('router')->post('/login', $authController.'@login')->withoutMiddleware(['mine.auth', 'mine.permission']);
     $router->post('uploadImage', [UploadController::class, 'uploadImage']);
+    $router->get('getFileInfoByHash', [UploadController::class, 'getFileInfoByHash']);
+    $router->get('showFile/{hash}', [UploadController::class, 'showFile'])->withoutMiddleware(['mine.auth', 'mine.permission']);
     $router->post('/logout', $authController.'@logout');
     $router->get('/getInfo', $authController.'@getInfo');
     /**
@@ -103,6 +105,8 @@ app('router')->group($attributes, function ($router) use($authController) {
      */
     app('router')->group(['prefix' => 'user', 'controller' => UserController::class], function ($router) {
         $router->get('/index', 'index');
+        $router->post('/updateInfo', 'updateInfo');
+        $router->post('/modifyPassword', 'modifyPassword');
     });
     /**
      * menu
