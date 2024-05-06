@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Lany\MineAdmin\Traits\CreateBy;
 
 
 /**
@@ -32,7 +33,7 @@ use Illuminate\Support\Collection;
  */
 class SystemRole extends MineModel
 {
-    use SoftDeletes;
+    use SoftDeletes, CreateBy;
     protected $table = 'system_role';
 
     // 所有
@@ -97,7 +98,7 @@ class SystemRole extends MineModel
         }
 
         if (isset($params['filterAdminRole']) && filled($params['filterAdminRole'])) {
-            $query->whereNotIn('id', [env('ADMIN_ROLE')]);
+            $query->whereNotIn('id', [config('mine_admin.super_admin_id')]);
         }
 
         if (isset($params['created_at']) && filled($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {

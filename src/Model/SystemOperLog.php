@@ -9,6 +9,7 @@ namespace Lany\MineAdmin\Model;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Lany\MineAdmin\Traits\CreateBy;
 
 /**
  * @property int $id 主键
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class SystemOperLog extends MineModel
 {
+    use CreateBy;
     protected $table = 'system_oper_log';
 
 

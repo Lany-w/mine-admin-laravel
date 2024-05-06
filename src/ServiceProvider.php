@@ -9,10 +9,12 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Lany\MineAdmin\Command\InstallProjectCommand;
+use Lany\MineAdmin\Events\OperationLog;
 use Lany\MineAdmin\Events\UserLoginAfter;
 use Lany\MineAdmin\Events\UserLoginBefore;
 use Lany\MineAdmin\Helper\MineCollection;
 use Lany\MineAdmin\Helper\MineUpload;
+use Lany\MineAdmin\Listeners\OperationLogListener;
 use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
 use Lany\MineAdmin\Middlewares\MineAuth;
@@ -23,7 +25,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     private array $middlewareAliases = [
         'mine.auth' => MineAuth::class,
-        'mine.permission' => MinePermission::class
+        'mine.permission' => MinePermission::class,
+        'mine.oper.log' => \Lany\MineAdmin\Middlewares\OperationLog::class
     ];
 
     private array $commands = [
@@ -73,6 +76,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         Event::listen(UserLoginBefore::class, UserLoginBeforeListener::class);
         Event::listen(UserLoginAfter::class, UserLoginAfterListener::class);
+        Event::listen(OperationLog::class, OperationLogListener::class);
 
     }
 

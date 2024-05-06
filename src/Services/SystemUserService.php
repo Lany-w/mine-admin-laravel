@@ -45,20 +45,21 @@ class SystemUserService extends SystemService
         if (!$user) {
             throw new MineException(trans('system.unable_get_userinfo'), 500);
         }
-        if ($user->isSuperAdmin()) {
-            $data['roles'] = ['superAdmin'];
-            $data['routers'] = app(SystemMenu::class)->getSuperAdminRouters();
-            $data['codes'] = ['*'];
-        } else {
-            $roles = app(SystemRole::class)->getMenuIdsByRoleIds($user->roles()->pluck('id')->toArray());
-            $ids = $this->filterMenuIds($roles);
-            $data['roles'] = $user->roles()->pluck('code')->toArray();
-            $data['routers'] = app(SystemMenu::class)->getRoutersByIds($ids);
-            $data['codes'] = app(SystemMenu::class)->getMenuCode($ids);
-        }
-        $data['user'] = $user->toArray();
-
-        return $data;
+        return cache()->store('redis')->rememberForever('loginInfo_userId_'.$user->id,function () use ($user) {
+            if ($user->isSuperAdmin()) {
+                $data['roles'] = ['superAdmin'];
+                $data['routers'] = app(SystemMenu::class)->getSuperAdminRouters();
+                $data['codes'] = ['*'];
+            } else {
+                $roles = app(SystemRole::class)->getMenuIdsByRoleIds($user->roles()->pluck('id')->toArray());
+                $ids = $this->filterMenuIds($roles);
+                $data['roles'] = $user->roles()->pluck('code')->toArray();
+                $data['routers'] = app(SystemMenu::class)->getRoutersByIds($ids);
+                $data['codes'] = app(SystemMenu::class)->getMenuCode($ids);
+            }
+            $data['user'] = $user->toArray();
+            return $data;
+        });
     }
 
     /**
@@ -157,5 +158,16 @@ class SystemUserService extends SystemService
         $redis->del($prefix . 'crontab', $prefix . 'modules');
 
         return $redis->del("{$prefix}loginInfo:userId_{$id}") > 0;
+    }
+
+    /**
+     * 根据用户ID列表获取用户基础信息.
+     */
+    public function getUserInfoByIds(array $ids, ?array $select = null): array
+    {
+        if (! $select) {
+            $select = ['id', 'username', 'nickname', 'phone', 'email', 'created_at'];
+        }
+        return SystemUser::query()->whereIn('id', $ids)->select($select)->get()->toArray();
     }
 }

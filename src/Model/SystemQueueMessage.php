@@ -9,6 +9,8 @@ namespace Lany\MineAdmin\Model;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Lany\MineAdmin\Mine;
 use Lany\MineAdmin\Traits\PageList;
@@ -30,7 +32,53 @@ use Lany\MineAdmin\Traits\PageList;
  */
 class SystemQueueMessage extends MineModel
 {
+    /**
+     * 消息类型：通知.
+     * @var string
+     */
+    public const TYPE_NOTICE = 'notice';
+
+    /**
+     * 消息类型：公告.
+     * @var string
+     */
+    public const TYPE_ANNOUNCE = 'announcement';
+
+    /**
+     * 消息类型：待办.
+     * @var string
+     */
+    public const TYPE_TODO = 'todo';
+
+    /**
+     * 消息类型：抄送我的.
+     * @var string
+     */
+    public const TYPE_COPY_MINE = 'carbon_copy_mine';
+
+    /**
+     * 消息类型：私信
+     * @var string
+     */
+    public const TYPE_PRIVATE_MESSAGE = 'private_message';
+
     protected $table = 'system_queue_message';
+
+    /**
+     * 关联发送人.
+     */
+    public function sendUser(): HasOne
+    {
+        return $this->hasOne(SystemUser::class, 'id', 'send_by');
+    }
+
+    /**
+     * 关联接收人中间表.
+     */
+    public function receiveUser(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemUser::class, 'system_queue_message_receive', 'message_id', 'user_id')->as('receive_users')->withPivot(...['read_status']);
+    }
 
 
     public function handleSearch(Builder $query, array $params): Builder

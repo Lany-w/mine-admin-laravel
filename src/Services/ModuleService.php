@@ -41,4 +41,28 @@ class ModuleService extends SystemService
         }
         redis()->set($key, serialize($modules));
     }
+
+    /**
+     * 获取模块缓存信息.
+     */
+    public function getModuleCache(?string $moduleName = null): array
+    {
+        $key = 'modules';
+        $redis = redis();
+        if ($data = $redis->get($key)) {
+            $data = unserialize($data);
+            return ! empty($moduleName) && isset($data[$moduleName]) ? $data[$moduleName] : $data;
+        }
+        $this->setModuleCache();
+        $this->mine->scanModule();
+        return $this->mine->getModuleInfo();
+    }
+
+    /**
+     * 设置需要分页的数组数据.
+     */
+    protected function getArrayData(array $params = []): array
+    {
+        return $this->getModuleCache();
+    }
 }

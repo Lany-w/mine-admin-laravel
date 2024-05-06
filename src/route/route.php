@@ -39,7 +39,7 @@ Mine::routes();
 
 $attributes = [
     'prefix'     => 'system',
-    'middleware' => array_merge(['api', 'mine.auth', 'mine.permission'], config('mine_admin.route.middleware')),
+    'middleware' => array_merge(['api', 'mine.auth', 'mine.permission', 'mine.oper.log'], config('mine_admin.route.middleware')),
 ];
 $authController = config('mine_admin.auth.controller', LoginController::class);
 app('router')->get('/swagger', function() {
@@ -66,6 +66,11 @@ app('router')->group($attributes, function ($router) use($authController) {
         $router->get('/getLoginLogList', 'getLoginLogPageList');
         $router->get('/getOperationLogList', 'getOperLogPageList');
         $router->get('/getResourceList', 'getResourceList');
+        $router->get('/getDeptTreeList', 'getDeptTreeList');
+        $router->get('/getRoleList', 'getRoleList');
+        $router->get('/getPostList', 'getPostList');
+        $router->get('/getUserList', 'getUserList');
+        $router->post('/getUserInfoByIds', 'getUserInfoByIds');
     });
     /**
      * dataDict
@@ -78,6 +83,7 @@ app('router')->group($attributes, function ($router) use($authController) {
      */
     app('router')->group(['prefix' => 'queueMessage', 'controller' => QueueMessageController::class], function ($router) {
         $router->get('/receiveList', 'receiveList');
+        $router->get('/sendList', 'sendList');
     });
     /**
      * dept
@@ -92,6 +98,7 @@ app('router')->group($attributes, function ($router) use($authController) {
     app('router')->group(['prefix' => 'role', 'controller' => RoleController::class], function ($router) {
         $router->get('/index', 'index');
         $router->get('/list', 'list');
+        $router->post('/save', 'save');
     });
     /**
      * post

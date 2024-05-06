@@ -44,4 +44,16 @@ class SystemMenuService extends SystemService
 
         return $query->get()->toTree();
     }
+
+    /**
+     * 通过code获取菜单名称.
+     */
+    public function findNameByCode(string $code): string
+    {
+        if (strlen($code) < 1) {
+            return t('system.undefined_menu');
+        }
+        $name = app($this->model)::query()->where('code', $code)->value('name');
+        return $name ?? t('system.undefined_menu');
+    }
 }
