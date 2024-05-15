@@ -15,6 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\Concerns\Has;
+use Lany\MineAdmin\Traits\CreateBy;
 use Lany\MineAdmin\Traits\HasDateTimeFormatter;
 use Lany\MineAdmin\Traits\PageList;
 use Lany\MineAdmin\Traits\UserDataScope;
@@ -45,13 +46,20 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  */
 class SystemUser extends Authenticatable implements JWTSubject
 {
-    use PageList, SoftDeletes, UserDataScope, HasDateTimeFormatter;
+    use PageList, SoftDeletes, UserDataScope, HasDateTimeFormatter, CreateBy;
 
     protected $table = 'system_user';
 
     const SUPER_ADMIN_ID = 1;
     const USER_NORMAL = 1;
     const USER_BAN = 2;
+    public const ENABLE = 1;
+    public const DISABLE = 2;
+
+    protected $fillable = ['id', 'username', 'password', 'user_type', 'nickname', 'phone', 'email', 'avatar', 'signed', 'dashboard', 'status', 'login_ip', 'login_time', 'backend_setting', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'remark'];
+
+    protected $casts = ['id' => 'integer', 'status' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
     protected $hidden = ['password', 'deleted_at'];
     /**
      * Notes:通过用户名检索用户.
@@ -65,6 +73,14 @@ class SystemUser extends Authenticatable implements JWTSubject
         return self::query()->where('username', $username)->firstOrFail();
     }
 
+    /**
+     * 通过用户名检查是否存在.
+     */
+    public function existsByUsername(string $username): bool
+    {
+        return self::query()->where('username', $username)->exists();
+    }
+
     public function isSuperAdmin(): bool
     {
         return config('mine_admin.super_admin_id', self::SUPER_ADMIN_ID) == $this->id;
@@ -73,6 +89,22 @@ class SystemUser extends Authenticatable implements JWTSubject
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(SystemRole::class, 'system_user_role', 'user_id', 'role_id');
+    }
+
+    /**
+     * 通过中间表关联岗位.
+     */
+    public function posts(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemPost::class, 'system_user_post', 'user_id', 'post_id');
+    }
+
+    /**
+     * 通过中间表关联部门.
+     */
+    public function depts(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemDept::class, 'system_user_dept', 'user_id', 'dept_id');
     }
 
     public function checkPass(string $password, string $hash): bool
@@ -202,5 +234,15 @@ class SystemUser extends Authenticatable implements JWTSubject
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        self::creating(function ($elm) {
+            if (strlen($elm->password) < 30) {
+                $elm->password = Hash::make($elm->password);
+            }
+        });
     }
 }

@@ -1,12 +1,12 @@
 <?php
-namespace Lany\MineAdmin\Helper;
+namespace Lany\MineAdmin\Helper\Annotation;
 /**
  * Notes:
  * User: Lany
  * DateTime: 2024/4/22 10:47
  */
 #[\Attribute]
-class Permission
+class Permission extends AbstractAnnotation
 {
     public static ?string $CODE;
     /**

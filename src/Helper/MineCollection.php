@@ -7,6 +7,9 @@
  */
 namespace Lany\MineAdmin\Helper;
 use Illuminate\Support\Collection;
+use Lany\MineAdmin\Helper\Excel\PhpOffice;
+use Lany\MineAdmin\Helper\Excel\XlsWriter;
+use Lany\MineAdmin\Model\MineModel;
 
 class MineCollection
 {
@@ -69,6 +72,34 @@ class MineCollection
             unset($data);
             return $tree;
         });
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function export(string $dto, string $filename, null|array|\Closure $closure = null, ?\Closure $callbackData = null)
+    {
+        $excelDrive = config('mine_admin.excel_drive');
+        if ($excelDrive === 'auto') {
+            $excel = extension_loaded('xlswriter') ? new XlsWriter($dto) : new PhpOffice($dto);
+        } else {
+            $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto) : new PhpOffice($dto);
+        }
+        return $excel->export($filename, is_null($closure) ? [] : $closure, $callbackData);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function import(string $dto, $model, ?\Closure $closure = null): bool
+    {
+        $excelDrive = config('mine_admin.excel_drive');
+        if ($excelDrive === 'auto') {
+            $excel = extension_loaded('xlswriter') ? new XlsWriter($dto) : new PhpOffice($dto);
+        } else {
+            $excel = $excelDrive === 'xlsWriter' ? new XlsWriter($dto) : new PhpOffice($dto);
+        }
+        return $excel->import($model, $closure);
     }
 
     public static function setRouter(&$menu): array

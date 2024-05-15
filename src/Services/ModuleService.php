@@ -39,7 +39,7 @@ class ModuleService extends SystemService
         if (! empty($moduleName)) {
             $modules[$moduleName] = $data;
         }
-        redis()->set($key, serialize($modules));
+        cache()->store('redis')->put($key, serialize($modules));
     }
 
     /**

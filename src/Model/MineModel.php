@@ -19,4 +19,6 @@ class MineModel extends Model
     public const ENABLE = 1;
     public const DISABLE = 2;
     protected $guarded = [];
+
+
 }

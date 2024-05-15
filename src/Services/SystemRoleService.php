@@ -34,11 +34,30 @@ class SystemRoleService extends SystemService
     }
 
     /**
+     * 单个或批量软删除数据.
+     */
+   /* #[DeleteCache('loginInfo:*')]
+    public function delete(array $ids): bool
+    {
+        $adminId = env('ADMIN_ROLE');
+        if (in_array($adminId, $ids)) {
+            unset($ids[array_search($adminId, $ids)]);
+        }
+        $this->model::destroy($ids);
+        return true;
+    }*/
+
+    public function delete(array $ids): bool
+    {
+        return ! empty($ids) && app($this->model)->delete($ids);
+    }
+
+    /**
      * 检查角色code是否已存在.
      */
     public function checkRoleCode(string $code): bool
     {
-        return SystemRole::query()->where('code', $code)->exists();
+        return app($this->model)::query()->where('code', $code)->exists();
     }
 
 }

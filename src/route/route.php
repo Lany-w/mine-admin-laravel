@@ -112,8 +112,15 @@ app('router')->group($attributes, function ($router) use($authController) {
      */
     app('router')->group(['prefix' => 'user', 'controller' => UserController::class], function ($router) {
         $router->get('/index', 'index');
+        $router->post('/save', 'save');
+        $router->delete('/delete', 'delete');
         $router->post('/updateInfo', 'updateInfo');
+        $router->post('/clearCache', 'clearCache');
+        $router->put('/changeStatus', 'changeStatus');
         $router->post('/modifyPassword', 'modifyPassword');
+        $router->post('/downloadTemplate', 'downloadTemplate')->middleware('mine.delete.file');
+        $router->post('/import', 'import');
+        $router->post('/export', 'export')->middleware('mine.delete.file');
     });
     /**
      * menu

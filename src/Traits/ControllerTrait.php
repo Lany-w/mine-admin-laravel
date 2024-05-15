@@ -17,11 +17,11 @@ trait ControllerTrait
             'requestId' => Str::uuid(),
             'path' => url()->current(),
             'success' => true,
-            'message' => 'success',
+            'message' => t('mineadmin.response_success'),
             'code' => $code,
             'data' => $data,
         ];
-        if (is_string($msgOrData) || is_null($msgOrData)) {
+        if ($msgOrData && is_string($msgOrData)) {
             $format['message'] = $msgOrData;
         }
         if (is_array($msgOrData) || is_object($msgOrData)) {
@@ -38,7 +38,7 @@ trait ControllerTrait
             'requestId' => Str::uuid(),
             'path' => url()->current(),
             'success' => false,
-            'message' => $message ?: 'fail',
+            'message' => $message ?: t('mineadmin.response_error'),
             'code' => $code,
             'data' => $data,
         ];

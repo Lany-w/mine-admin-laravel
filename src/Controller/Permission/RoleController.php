@@ -8,7 +8,7 @@
 namespace Lany\MineAdmin\Controller\Permission;
 
 use Illuminate\Http\JsonResponse;
-use Lany\MineAdmin\Helper\Permission;
+use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Controller\MineController;
 use Lany\MineAdmin\Requests\SystemRoleRequest;
 use Lany\MineAdmin\Services\SystemRoleService;
@@ -23,6 +23,7 @@ class RoleController extends MineController
      * DateTime: 2024/4/19 13:34
      * @return JsonResponse
      */
+    #[Permission('system:role, system:role:index')]
     public function index(): JsonResponse
     {
         return $this->success($this->service->getPageList($this->request->all()));
@@ -46,5 +47,14 @@ class RoleController extends MineController
     public function save(SystemRoleRequest $request): JsonResponse
     {
         return $this->success(['id' => $this->service->save($request->input())]);
+    }
+
+    /**
+     * 单个或批量删除数据到回收站.
+     */
+    #[Permission('system:role:delete')]
+    public function delete(): JsonResponse
+    {
+        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 }

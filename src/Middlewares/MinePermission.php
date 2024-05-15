@@ -7,11 +7,11 @@
 
 namespace Lany\MineAdmin\Middlewares;
 use Lany\MineAdmin\Exceptions\NoPermissionException;
-use Lany\MineAdmin\Helper\Permission;
+use Lany\MineAdmin\Helper\Annotation\Handle\PermissionAnnotation;
+use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Mine;
 use \Closure;
 use Illuminate\Http\Request;
-use Lany\MineAdmin\Services\PermissionService;
 use Lany\MineAdmin\Services\SystemMenuService;
 use Lany\MineAdmin\Services\SystemUserService;
 
@@ -19,12 +19,13 @@ class MinePermission
 {
     /**
      * 处理传入请求。
+     * @throws \ReflectionException
      */
     public function handle(Request $request, Closure $next)
     {
         $user = Mine::guard()->user();
 
-        $permission = app(PermissionService::class)->getPermissionAnnotation();
+        $permission = PermissionAnnotation::getAnnotation();
 
         if ($user->isSuperAdmin()) {
             Permission::$CODE = $permission->code;

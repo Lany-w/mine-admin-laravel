@@ -9,7 +9,7 @@ namespace Lany\MineAdmin\Listeners;
 
 use Lany\MineAdmin\Events\OperationLog;
 use Lany\MineAdmin\Helper\Ip2region;
-use Lany\MineAdmin\Helper\Permission;
+use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Model\SystemMenu;
 use Lany\MineAdmin\Model\SystemOperLog;
 use Lany\MineAdmin\Services\SystemMenuService;
@@ -27,7 +27,7 @@ class OperationLogListener
         //$data = $event->data;
         $response = $event->response;
         $isDownload = false;
-        if (! empty(request()->header('content-description')) && ! empty(request()->header('content-transfer-encoding'))) {
+        if ($response->headers->has('Content-Disposition')) {
             $isDownload = true;
         }
 

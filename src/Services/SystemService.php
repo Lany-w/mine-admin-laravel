@@ -121,4 +121,45 @@ abstract class SystemService
     {
         return [];
     }
+
+    public function filterExecuteAttributes(array &$data, bool $removePk = false): void
+    {
+        $model = new $this->model();
+        $attrs = $model->getFillable();
+        foreach ($data as $name => $val) {
+            if (! in_array($name, $attrs)) {
+                unset($data[$name]);
+            }
+        }
+        if ($removePk && isset($data[$model->getKeyName()])) {
+            unset($data[$model->getKeyName()]);
+        }
+        $model = null;
+    }
+
+    /**
+     * 修改数据状态
+     */
+    public function changeStatus(mixed $id, string $value, string $filed = 'status'): bool
+    {
+        return $value == MineModel::ENABLE ? $this->enable([$id], $filed) : $this->disable([$id], $filed);
+    }
+
+    /**
+     * 单个或批量禁用数据.
+     */
+    public function disable(array $ids, string $field = 'status'): bool
+    {
+        app($this->model)::query()->whereIn((new $this->model())->getKeyName(), $ids)->update([$field => $this->model::DISABLE]);
+        return true;
+    }
+
+    /**
+     * 单个或批量启用数据.
+     */
+    public function enable(array $ids, string $field = 'status'): bool
+    {
+        app($this->model)::query()->whereIn((new $this->model())->getKeyName(), $ids)->update([$field => $this->model::ENABLE]);
+        return true;
+    }
 }

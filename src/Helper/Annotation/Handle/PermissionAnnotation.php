@@ -2,22 +2,24 @@
 /**
  * Notes:
  * User: Lany
- * DateTime: 2024/4/30 16:13
+ * DateTime: 2024/5/7 13:40
  */
 
-namespace Lany\MineAdmin\Services;
+namespace Lany\MineAdmin\Helper\Annotation\Handle;
 
 use Lany\MineAdmin\Exceptions\MineException;
-use Lany\MineAdmin\Exceptions\NoPermissionException;
+use Lany\MineAdmin\Helper\Annotation\AbstractAnnotation;
 use Lany\MineAdmin\Helper\Annotation\Permission;
+use Lany\MineAdmin\Interfaces\MineAnnotation;
 use ReflectionClass;
 use ReflectionMethod;
-class PermissionService
+class PermissionAnnotation extends AbstractMineAnnotation implements MineAnnotation
 {
     /**
+     * @param null $className
      * @throws \ReflectionException
      */
-    public function getPermissionAnnotation(): \stdClass
+    public static function getAnnotation($className = null): array|AbstractAnnotation
     {
         $route = request()->route();
         [$controller, $method] = explode('@', $route->getActionName());
@@ -26,7 +28,7 @@ class PermissionService
             $controllerReflector = new ReflectionClass($controller);
             $methodReflector = $controllerReflector->getMethod($method);
             // 获取方法的注解
-            return $this->getMethodAnnotations($methodReflector);
+            return self::getMethodAnnotations($methodReflector);
 
         } catch (MineException $e) {
             throw new MineException($e->getMessage());
@@ -34,7 +36,7 @@ class PermissionService
     }
 
     // 获取方法的注解
-    private function getMethodAnnotations(ReflectionMethod $method): object
+    private static function getMethodAnnotations(ReflectionMethod $method): object
     {
         if ($annotations = $method->getAttributes(Permission::class)) {
             return new Permission(...$annotations[0]->getArguments());

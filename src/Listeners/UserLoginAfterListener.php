@@ -45,9 +45,9 @@ class UserLoginAfterListener
         ]);
 
         $key = 'Token:'. $user->id;
-        Redis::del($key);
+        cache()->store('redis')->forget($key);
 
-        ($event->loginStatus > 0 && $event->token) && Redis::set($key, $event->token, 'ex',config('jwt.ttl') * 60);
+        ($event->loginStatus > 0 && $event->token) && cache()->store('redis')->put($key, $event->token, config('jwt.ttl') * 60);
 
         if ($event->loginStatus > 0) {
 

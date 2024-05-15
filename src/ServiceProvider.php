@@ -17,6 +17,7 @@ use Lany\MineAdmin\Helper\MineUpload;
 use Lany\MineAdmin\Listeners\OperationLogListener;
 use Lany\MineAdmin\Listeners\UserLoginAfterListener;
 use Lany\MineAdmin\Listeners\UserLoginBeforeListener;
+use Lany\MineAdmin\Middlewares\DeleteFileAfterDownload;
 use Lany\MineAdmin\Middlewares\MineAuth;
 use Lany\MineAdmin\Middlewares\MinePermission;
 
@@ -26,7 +27,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     private array $middlewareAliases = [
         'mine.auth' => MineAuth::class,
         'mine.permission' => MinePermission::class,
-        'mine.oper.log' => \Lany\MineAdmin\Middlewares\OperationLog::class
+        'mine.oper.log' => \Lany\MineAdmin\Middlewares\OperationLog::class,
+        'mine.delete.file' => DeleteFileAfterDownload::class
     ];
 
     private array $commands = [

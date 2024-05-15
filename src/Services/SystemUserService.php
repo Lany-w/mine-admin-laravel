@@ -5,11 +5,16 @@
  * DateTime: 2024/4/10 10:46
  */
 namespace Lany\MineAdmin\Services;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Lany\MineAdmin\Events\UserAdd;
+use Lany\MineAdmin\Events\UserDelete;
 use Lany\MineAdmin\Events\UserLoginAfter;
 use Lany\MineAdmin\Exceptions\MineException;
 use Lany\MineAdmin\Exceptions\NormalStatusException;
 use Lany\MineAdmin\Exceptions\UserBanException;
+use Lany\MineAdmin\Helper\MineCollection;
+use Lany\MineAdmin\Middlewares\OperationLog;
 use Lany\MineAdmin\Mine;
 use Lany\MineAdmin\Model\SystemMenu;
 use Lany\MineAdmin\Model\SystemRole;
@@ -91,7 +96,7 @@ class SystemUserService extends SystemService
         $params = [$iterator, $key, 100];
         // 执行 SCAN 命令
         do {
-            $users = Redis::command('SCAN', $params);
+            $users = Redis::connection('cache')->command('SCAN', $params);
             foreach ($users as $user) {
                 // 如果是已经加入到黑名单的就代表不是登录状态了
                 /*if (! $this->hasTokenBlack($redis->get($user)) && preg_match("/{$key}(\\d+)$/", $user, $match) && isset($match[1])) {
@@ -141,23 +146,23 @@ class SystemUserService extends SystemService
      */
     public function clearCache(string $id): bool
     {
-        $redis = redis();
+        $redis = Redis::connection('cache');
         $prefix = config('cache.prefix');
 
         $iterator = null;
         do {
-            $configKey = Redis::command('SCAN', [$iterator, $prefix . 'config:*', 100]);
-            $redis->del($configKey);
+            $configKey = $redis->command('SCAN', [$iterator, 'config:*', 100]);
+            $redis->command('del', [$configKey]);
         } while ($iterator != 0);
 
         do {
-            $dictKey = Redis::command('SCAN', [$iterator, $prefix . 'system:dict:*', 100]);
-            $redis->del($dictKey);
+            $dictKey = $redis->command('SCAN', [$iterator, 'system_dict_*', 100]);
+            $redis->command('del', [$dictKey]);
         } while ($iterator != 0);
 
-        $redis->del($prefix . 'crontab', $prefix . 'modules');
+        $redis->command('del', ['crontab', 'modules']);
 
-        return $redis->del("{$prefix}loginInfo:userId_{$id}") > 0;
+        return $redis->command('del', ["{$prefix}:loginInfo_userId_{$id}"]) > 0;
     }
 
     /**
@@ -169,5 +174,99 @@ class SystemUserService extends SystemService
             $select = ['id', 'username', 'nickname', 'phone', 'email', 'created_at'];
         }
         return SystemUser::query()->whereIn('id', $ids)->select($select)->get()->toArray();
+    }
+
+    /**
+     * 新增用户.
+     */
+    public function save(array $data): mixed
+    {
+        if (app($this->model)->existsByUsername($data['username'])) {
+            throw new NormalStatusException(t('system.username_exists'));
+        }
+        $data['password'] = Hash::make($data['password']);
+        $data = $this->handleData($data);
+
+        $role_ids = $data['role_ids'] ?? [];
+        $post_ids = $data['post_ids'] ?? [];
+        $dept_ids = $data['dept_ids'] ?? [];
+        $this->filterExecuteAttributes($data, true);
+
+        DB::beginTransaction();
+        try {
+            $user = app($this->model)::query()->create($data);
+            $user->roles()->sync($role_ids, false);
+            $user->posts()->sync($post_ids, false);
+            $user->depts()->sync($dept_ids, false);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new MineException($e->getMessage());
+        }
+
+        $data['id'] = $user->id;
+        UserAdd::dispatch($data);
+        OperationLog::$FLAG = true;
+
+        return $user->id;
+    }
+
+    /**
+     * 删除用户.
+     */
+    public function delete(array $ids): bool
+    {
+        if (! empty($ids)) {
+            if (($key = array_search(config('mine_admin.super_admin_id'), $ids)) !== false) {
+                unset($ids[$key]);
+            }
+            $result = app($this->model)::destroy($ids);
+            event(new UserDelete($ids));
+            return $result;
+        }
+
+        return false;
+    }
+
+    public function import(string $dto, ?\Closure $closure = null): bool
+    {
+        return Db::transaction(function () use ($dto, $closure) {
+            return (new MineCollection())->import($dto, new $this->model, $closure);
+        });
+    }
+
+    public function export(array $params, ?string $dto, ?string $filename = null, ?\Closure $callbackData = null)
+    {
+        OperationLog::$FLAG = true;
+        if (empty($dto)) {
+            abort(500, '导出未指定DTO');
+        }
+
+        if (empty($filename)) {
+            $filename = app($this->model)->getTable();
+        }
+
+        return (new MineCollection())->export($dto, $filename, app($this->model)->getList($params), $callbackData);
+    }
+
+    /**
+     * 处理提交数据.
+     * @param mixed $data
+     */
+    protected function handleData(array $data): array
+    {
+        if (! is_array($data['role_ids'])) {
+            $data['role_ids'] = explode(',', $data['role_ids']);
+        }
+        if (($key = array_search(config('mine_admin.admin_role'), $data['role_ids'])) !== false) {
+            unset($data['role_ids'][$key]);
+        }
+        if (! empty($data['post_ids']) && ! is_array($data['post_ids'])) {
+            $data['post_ids'] = explode(',', $data['post_ids']);
+        }
+        if (! empty($data['dept_ids']) && ! is_array($data['dept_ids'])) {
+            $data['dept_ids'] = explode(',', $data['dept_ids']);
+        }
+        return $data;
     }
 }

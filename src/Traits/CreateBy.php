@@ -7,9 +7,11 @@
 
 namespace Lany\MineAdmin\Traits;
 
+use Illuminate\Support\Facades\Hash;
+
 trait CreateBy
 {
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
         self::creating(function ($elm) {

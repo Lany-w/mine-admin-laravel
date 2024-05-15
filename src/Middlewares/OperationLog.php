@@ -15,10 +15,9 @@ class OperationLog
     public function handle(Request $request, Closure $next)
     {
         $response = $next($request);
-        if (self::$FLAG) {
-            OperationLogEvent::dispatch($response);
-            self::$FLAG = false;
-        }
+
+        OperationLogEvent::dispatchIf(self::$FLAG, $response);
+        self::$FLAG = false;
 
         return $response;
     }
