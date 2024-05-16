@@ -7,6 +7,7 @@
 namespace Lany\MineAdmin\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Lany\MineAdmin\Events\ClearCache;
 use Lany\MineAdmin\Events\UserAdd;
 use Lany\MineAdmin\Events\UserDelete;
 use Lany\MineAdmin\Events\UserLoginAfter;
@@ -248,6 +249,42 @@ class SystemUserService extends SystemService
 
         return (new MineCollection())->export($dto, $filename, app($this->model)->getList($params), $callbackData);
     }
+
+    public function update(mixed $id, array $data): bool
+    {
+        if (array_key_exists('username', $data)) {
+            unset($data['username']);
+        }
+        if (array_key_exists('password', $data)) {
+            unset($data['password']);
+        }
+        ClearCache::dispatch("loginInfo_userId_".$id);
+
+        $model = app($this->model)->find($id);
+        return $model->update($this->handleData($data));
+    }
+
+    /**
+     * 设置用户首页.
+     */
+    public function setHomePage(array $params): bool
+    {
+        $res = app($this->model)::query()
+                ->where('id', $params['id'])
+                ->update(['dashboard' => $params['dashboard']]) > 0;
+
+        $this->clearCache((string) $params['id']);
+        return $res;
+    }
+
+    /**
+     * 初始化用户密码
+     */
+    public function initUserPassword(int $id, string $password = '123456'): bool
+    {
+        return app($this->model)->initUserPassword($id, $password);
+    }
+
 
     /**
      * 处理提交数据.

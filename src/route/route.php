@@ -121,6 +121,10 @@ app('router')->group($attributes, function ($router) use($authController) {
         $router->post('/downloadTemplate', 'downloadTemplate')->middleware('mine.delete.file');
         $router->post('/import', 'import');
         $router->post('/export', 'export')->middleware('mine.delete.file');
+        $router->get('/read/{id}', 'read');
+        $router->put('/update/{id}', 'update');
+        $router->post('/setHomePage', 'setHomePage');
+        $router->put('/initUserPassword', 'initUserPassword');
     });
     /**
      * menu

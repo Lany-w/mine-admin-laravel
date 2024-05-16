@@ -236,6 +236,20 @@ class SystemUser extends Authenticatable implements JWTSubject
         return $this->username;
     }
 
+    /**
+     * 获取用户信息.
+     */
+    public function read(mixed $id, array $column = ['*'])
+    {
+        $user = self::find($id);
+        if ($user) {
+            $user->setAttribute('roleList', $user->roles()->get(['id', 'name']) ?: []);
+            $user->setAttribute('postList', $user->posts()->get(['id', 'name']) ?: []);
+            $user->setAttribute('deptList', $user->depts()->get(['id', 'name']) ?: []);
+        }
+        return $user;
+    }
+
     protected static function boot(): void
     {
         parent::boot();

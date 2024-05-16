@@ -15,9 +15,11 @@ use Lany\MineAdmin\Helper\Annotation\ExcelProperty;
 use Lany\MineAdmin\Helper\Annotation\Handle\ExcelPropertyAnnotation;
 use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Helper\MineCollection;
+use Lany\MineAdmin\Middlewares\OperationLog;
 use Lany\MineAdmin\Model\SystemUser;
 use Lany\MineAdmin\Requests\ChangePasswordRequest;
 use Lany\MineAdmin\Requests\ChangeStatusRequest;
+use Lany\MineAdmin\Requests\SystemUserRequest;
 use Lany\MineAdmin\Requests\SystemUserSaveRequest;
 use Lany\MineAdmin\Services\SystemUserService;
 
@@ -35,6 +37,25 @@ class UserController extends MineController
     public function index(Request $request): JsonResponse
     {
         return $this->success($this->service->getPageList($request->all(), false));
+    }
+
+    /**
+     * 获取一个用户信息.
+     */
+    #[Permission('system:user:read')]
+    public function read(int $id): JsonResponse
+    {
+        return $this->success($this->service->read($id));
+    }
+
+    /**
+     * 更新一个用户信息.
+     */
+    #[Permission('system:user:update')]
+    public function update(int $id, SystemUserRequest $request): JsonResponse
+    {
+        OperationLog::$FLAG = true;
+        return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
     }
 
     /**
@@ -89,6 +110,25 @@ class UserController extends MineController
     {
         $this->service->clearCache((string) $this->request->input('id', null));
         return $this->success();
+    }
+
+    /**
+     * 设置用户首页.
+     */
+    #[Permission('system:user:homePage')]
+    public function setHomePage(SystemUserRequest $request): JsonResponse
+    {
+        return $this->service->setHomePage($request->validated()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 初始化用户密码
+     */
+    #[Permission('system:user:initUserPassword')]
+    public function initUserPassword(): JsonResponse
+    {
+        OperationLog::$FLAG = true;
+        return $this->service->initUserPassword((int) $this->request->input('id')) ? $this->success() : $this->error();
     }
 
     /**

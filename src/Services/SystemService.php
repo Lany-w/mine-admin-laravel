@@ -8,6 +8,7 @@
 namespace Lany\MineAdmin\Services;
 
 use Illuminate\Support\Collection;
+use Lany\MineAdmin\Events\ClearCache;
 use Lany\MineAdmin\Model\MineModel;
 
 abstract class SystemService
@@ -162,4 +163,11 @@ abstract class SystemService
         app($this->model)::query()->whereIn((new $this->model())->getKeyName(), $ids)->update([$field => $this->model::ENABLE]);
         return true;
     }
+
+    public function read(mixed $id, array $column = ['*'])
+    {
+        return app($this->model)->read($id, $column);
+    }
+
+
 }
