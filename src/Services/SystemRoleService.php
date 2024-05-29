@@ -29,7 +29,7 @@ class SystemRoleService extends SystemService
         $role = app($this->model)::create($data);
         empty($menuIds) || $role->menus()->sync(array_unique($menuIds), false);
         empty($deptIds) || $role->depts()->sync($deptIds, false);
-        OperationLog::$FLAG = true;
+
         return $role->id;
     }
 

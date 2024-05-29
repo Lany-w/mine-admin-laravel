@@ -8,17 +8,61 @@
 namespace Lany\MineAdmin\Middlewares;
 use Illuminate\Http\Request;
 use \Closure;
+use Illuminate\Support\Facades\Log;
 use Lany\MineAdmin\Events\OperationLog as OperationLogEvent;
+use Lany\MineAdmin\Helper\Annotation\Handle\OperationLogAnnotation;
+use Lany\MineAdmin\Helper\Annotation\Permission;
+use Lany\MineAdmin\Helper\Ip2region;
+use Lany\MineAdmin\Model\SystemOperLog;
+use Lany\MineAdmin\Services\SystemMenuService;
+
 class OperationLog
 {
-    public static bool $FLAG = false;
     public function handle(Request $request, Closure $next)
     {
-        $response = $next($request);
+        return $next($request);
+    }
 
-        OperationLogEvent::dispatchIf(self::$FLAG, $response);
-        self::$FLAG = false;
+    /**
+     * @throws \ReflectionException
+     */
+    public function terminate($request, $response): void
+    {
+        $annotations = OperationLogAnnotation::getAnnotation();
+        Log::channel('daily')->debug($annotations);
+        Log::channel('daily')->debug($annotations instanceof \Lany\MineAdmin\Helper\Annotation\OperationLog);
+        if ($annotations instanceof \Lany\MineAdmin\Helper\Annotation\OperationLog) {
+            //记录操作日志
+            $isDownload = false;
+            if ($response->headers->has('Content-Disposition')) {
+                $isDownload = true;
+            }
 
-        return $response;
+            $operationLog = [
+                //'time' => now(),
+                'method' => request()->method(),
+                'router' => request()->getRequestUri(),
+                //'protocol' => request()->get,
+                'ip' => request()->ip(),
+                'ip_location' => (new Ip2region())->search(request()->ip()),
+                'service_name' => Permission::$CODE ? $this->getOperationMenuName() : '',
+                'request_data' => json_encode(request()->all(), JSON_UNESCAPED_UNICODE),
+                'response_code' => $response->getStatusCode(),
+                'response_data' => $isDownload ? '文件下载' : $response->getContent(),
+            ];
+            try {
+                $operationLog['username'] = user()->getUsername();
+            } catch (\Exception $e) {
+                $operationLog['username'] = t('system.no_login_user');
+            }
+
+            SystemOperLog::query()->create($operationLog);
+        }
+
+    }
+
+    protected function getOperationMenuName(): string
+    {
+        return app(SystemMenuService::class)->findNameByCode(Permission::$CODE);
     }
 }

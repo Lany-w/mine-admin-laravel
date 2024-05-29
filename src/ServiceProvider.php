@@ -80,7 +80,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         Event::listen(UserLoginBefore::class, UserLoginBeforeListener::class);
         Event::listen(UserLoginAfter::class, UserLoginAfterListener::class);
-        Event::listen(OperationLog::class, OperationLogListener::class);
+        //Event::listen(OperationLog::class, OperationLogListener::class);
         Event::listen(ClearCache::class, ClearCacheListener::class);
 
     }

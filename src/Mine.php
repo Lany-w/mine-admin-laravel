@@ -6,14 +6,8 @@
  */
 namespace Lany\MineAdmin;
 use Illuminate\Support\Facades\Auth;
-use Lany\MineAdmin\Controller\CommonController;
-use Lany\MineAdmin\Controller\DataCenter\DictDataController;
-use Lany\MineAdmin\Controller\DataCenter\QueueMessageController;
-use Lany\MineAdmin\Controller\LoginController;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\StatefulGuard;
-use Lany\MineAdmin\Controller\Permission\DeptController;
-use Lany\MineAdmin\Controller\Permission\RoleController;
 
 class Mine
 {

@@ -207,7 +207,6 @@ class SystemUserService extends SystemService
 
         $data['id'] = $user->id;
         UserAdd::dispatch($data);
-        OperationLog::$FLAG = true;
 
         return $user->id;
     }
@@ -238,7 +237,6 @@ class SystemUserService extends SystemService
 
     public function export(array $params, ?string $dto, ?string $filename = null, ?\Closure $callbackData = null)
     {
-        OperationLog::$FLAG = true;
         if (empty($dto)) {
             abort(500, '导出未指定DTO');
         }

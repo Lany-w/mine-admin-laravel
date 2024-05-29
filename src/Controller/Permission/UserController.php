@@ -15,7 +15,7 @@ use Lany\MineAdmin\Helper\Annotation\ExcelProperty;
 use Lany\MineAdmin\Helper\Annotation\Handle\ExcelPropertyAnnotation;
 use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Helper\MineCollection;
-use Lany\MineAdmin\Middlewares\OperationLog;
+use Lany\MineAdmin\Helper\Annotation\OperationLog;
 use Lany\MineAdmin\Model\SystemUser;
 use Lany\MineAdmin\Requests\ChangePasswordRequest;
 use Lany\MineAdmin\Requests\ChangeStatusRequest;
@@ -51,10 +51,9 @@ class UserController extends MineController
     /**
      * 更新一个用户信息.
      */
-    #[Permission('system:user:update')]
+    #[Permission('system:user:update'), OperationLog]
     public function update(int $id, SystemUserRequest $request): JsonResponse
     {
-        OperationLog::$FLAG = true;
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
     }
 
@@ -77,7 +76,7 @@ class UserController extends MineController
     /**
      * 新增一个用户.
      */
-    #[Permission('system:user:save')]
+    #[Permission('system:user:save'), OperationLog]
     public function save(SystemUserSaveRequest $request): JsonResponse
     {
         return $this->success(['id' => $this->service->save($request->all())]);
@@ -127,7 +126,7 @@ class UserController extends MineController
     #[Permission('system:user:initUserPassword')]
     public function initUserPassword(): JsonResponse
     {
-        OperationLog::$FLAG = true;
+        //OperationLog::$FLAG = true;
         return $this->service->initUserPassword((int) $this->request->input('id')) ? $this->success() : $this->error();
     }
 
@@ -135,6 +134,7 @@ class UserController extends MineController
      * 下载导入模板
      * @throws \ReflectionException
      */
+    #[OperationLog]
     public function downloadTemplate(): ?\Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         return (new MineCollection())->export(UserDto::class,'模板下载', []);
@@ -152,7 +152,7 @@ class UserController extends MineController
     /**
      * 用户导出.
      */
-    #[Permission('system:user:export')]
+    #[Permission('system:user:export'), OperationLog]
     public function export(): ?\Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         return $this->service->export($this->request->all(), UserDto::class, '用户列表');

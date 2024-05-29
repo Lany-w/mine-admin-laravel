@@ -8,6 +8,7 @@
 namespace Lany\MineAdmin\Controller\Permission;
 
 use Illuminate\Http\JsonResponse;
+use Lany\MineAdmin\Helper\Annotation\OperationLog;
 use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Controller\MineController;
 use Lany\MineAdmin\Requests\SystemRoleRequest;
@@ -43,7 +44,7 @@ class RoleController extends MineController
     /**
      * 新增角色.
      */
-    #[Permission('system:role:save')]
+    #[Permission('system:role:save'), OperationLog]
     public function save(SystemRoleRequest $request): JsonResponse
     {
         return $this->success(['id' => $this->service->save($request->input())]);

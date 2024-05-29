@@ -213,7 +213,8 @@ app('router')->group($attributes, function ($router) use($authController) {
 });
 
 app('router')->group([
-    'prefix' => 'setting'
+    'prefix' => 'setting',
+    'middleware' => array_merge(['api', 'mine.auth', 'mine.permission', 'mine.oper.log'], config('mine_admin.route.middleware')),
 ], function($router) {
     $router->get('/module/index', [ModuleController::class, 'index']);
     $router->get('/code/index', [GenerateCodeController::class, 'index']);

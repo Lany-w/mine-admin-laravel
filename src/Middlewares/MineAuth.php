@@ -17,7 +17,7 @@ class MineAuth
     public function handle(Request $request, Closure $next)
     {
         if (!Mine::guard()->check()) {
-            abort(401, t('jwt.no_login'));
+            abort(401);
         }
 
         return $next($request);

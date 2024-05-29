@@ -32,7 +32,7 @@ class MineExcel
         return chr(64 + intval(($columnIndex - 26) / 676)) . chr(65 + intval((($columnIndex - 26) % 676) / 26)) . chr(65 + $columnIndex % 26);
     }
 
-    public function downloadExcel( $filePath, string $filename)
+    public function downloadExcel($filePath, string $filename)
     {
         return response()->download($filePath, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -40,7 +40,7 @@ class MineExcel
             'Content-Length' => filesize($filePath),
             'Content-Transfer-Encoding' => 'binary',
             'Cache-Control' => 'must-revalidate',
-            'pragma' => 'public'
+            'pragma' => 'public',
         ]);
     }
 }
