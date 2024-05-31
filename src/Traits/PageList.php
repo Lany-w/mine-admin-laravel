@@ -136,5 +136,10 @@ trait PageList
         return $data->toTree([], $data[0]->{$parentField} ?? 0, $id, $parentField, $children);
     }
 
+    public function numberOperation(mixed $id, string $field, int $value): bool
+    {
+        return $this->where('id', $id)->update([$field => $value]);
+    }
+
 
 }

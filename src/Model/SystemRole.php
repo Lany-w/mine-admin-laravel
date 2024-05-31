@@ -35,6 +35,7 @@ class SystemRole extends MineModel
 {
     use SoftDeletes, CreateBy;
     protected $table = 'system_role';
+    protected $fillable = ['id', 'name', 'code', 'data_scope', 'status', 'sort', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'remark'];
 
     // 所有
     public const ALL_SCOPE = 1;
@@ -65,6 +66,20 @@ class SystemRole extends MineModel
 
         return self::query()->whereIn('id', $ids)->with(['menus' => function ($query) {
             $query->select('id')->where('status', SystemMenu::ENABLE)->orderBy('sort', 'desc');
+        }])->get(['id'])->toArray();
+    }
+
+    /**
+     * 通过角色ID列表获取部门ID.
+     */
+    public function getDeptIdsByRoleIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return self::query()->whereIn('id', $ids)->with(['depts' => function ($query) {
+            $query->select('id')->where('status', self::ENABLE)->orderBy('sort', 'desc');
         }])->get(['id'])->toArray();
     }
 

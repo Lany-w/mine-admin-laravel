@@ -89,7 +89,7 @@ class SystemUserService extends SystemService
     public function getOnlineUserPageList(array $params = []): array
     {
 
-        $key = config('database.redis.options.prefix').'Token:*';
+        $key = fullCacheKey('Token:*');
         //$jwt = $this->container->get(JWT::class);
         //$blackList = $this->container->get(JWT::class)->blackList;
         $userIds = [];
@@ -97,7 +97,7 @@ class SystemUserService extends SystemService
         $params = [$iterator, $key, 100];
         // 执行 SCAN 命令
         do {
-            $users = Redis::connection('cache')->command('SCAN', $params);
+            $users = redis()->command('SCAN', $params);
             foreach ($users as $user) {
                 // 如果是已经加入到黑名单的就代表不是登录状态了
                 /*if (! $this->hasTokenBlack($redis->get($user)) && preg_match("/{$key}(\\d+)$/", $user, $match) && isset($match[1])) {
@@ -147,23 +147,23 @@ class SystemUserService extends SystemService
      */
     public function clearCache(string $id): bool
     {
-        $redis = Redis::connection('cache');
-        $prefix = config('cache.prefix');
+        $redis = redis();
+        //$prefix = config('cache.prefix');
 
         $iterator = null;
         do {
-            $configKey = $redis->command('SCAN', [$iterator, 'config:*', 100]);
-            $redis->command('del', [$configKey]);
+            $configKey = $redis->command('SCAN', [$iterator, fullCacheKey('config:*'), 100]);
+            if (!empty($configKey)) $redis->command('del', array_map('cacheKey', $configKey));
         } while ($iterator != 0);
 
         do {
-            $dictKey = $redis->command('SCAN', [$iterator, 'system_dict_*', 100]);
-            $redis->command('del', [$dictKey]);
+            $dictKey = $redis->command('SCAN', [$iterator, fullCacheKey('system_dict_*'), 100]);
+            if (!empty($dictKey)) $redis->command('del', array_map('cacheKey', $dictKey));
         } while ($iterator != 0);
 
-        $redis->command('del', ['crontab', 'modules']);
+        $redis->command('del', [cacheKey('crontab'), cacheKey('modules')]);
 
-        return $redis->command('del', ["{$prefix}:loginInfo_userId_{$id}"]) > 0;
+        return $redis->command('del', [cacheKey("loginInfo_userId_{$id}")]) > 0;
     }
 
     /**

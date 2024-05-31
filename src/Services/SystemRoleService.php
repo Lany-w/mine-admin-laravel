@@ -32,6 +32,44 @@ class SystemRoleService extends SystemService
 
         return $role->id;
     }
+    /**
+     * 更新角色.
+     */
+    public function update(mixed $id, array $data): bool
+    {
+        deleteCache('loginInfo*');
+        $menuIds = $data['menu_ids'] ?? [];
+        $deptIds = $data['dept_ids'] ?? [];
+        $this->filterExecuteAttributes($data, true);
+        $this->model::query()->where('id', $id)->update($data);
+        if ($id != env('ADMIN_ROLE')) {
+            $role = $this->model::find($id);
+            if ($role) {
+                ! empty($menuIds) && $role->menus()->sync(array_unique($menuIds));
+                ! empty($deptIds) && $role->depts()->sync($deptIds);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 通过角色获取菜单.
+     */
+    public function getMenuByRole(int $id): array
+    {
+        return app($this->model)->getMenuIdsByRoleIds(['ids' => $id]);
+    }
+
+    /**
+     * 通过角色获取部门.
+     */
+    public function getDeptByRole(int $id): array
+    {
+        return app($this->model)->getDeptIdsByRoleIds(['ids' => $id]);
+    }
+
+
 
     /**
      * 单个或批量软删除数据.
@@ -47,17 +85,27 @@ class SystemRoleService extends SystemService
         return true;
     }*/
 
-    public function delete(array $ids): bool
-    {
-        return ! empty($ids) && app($this->model)->delete($ids);
-    }
-
     /**
      * 检查角色code是否已存在.
      */
     public function checkRoleCode(string $code): bool
     {
         return app($this->model)::query()->where('code', $code)->exists();
+    }
+
+    /**
+     * 单个或批量软删除数据.
+     */
+    public function delete(array $ids): bool
+    {
+        if (empty($ids)) return true;
+
+        $adminId = env('ADMIN_ROLE');
+        if (in_array($adminId, $ids)) {
+            unset($ids[array_search($adminId, $ids)]);
+        }
+        $this->model::destroy($ids);
+        return true;
     }
 
 }

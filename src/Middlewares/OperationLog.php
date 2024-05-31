@@ -9,7 +9,6 @@ namespace Lany\MineAdmin\Middlewares;
 use Illuminate\Http\Request;
 use \Closure;
 use Illuminate\Support\Facades\Log;
-use Lany\MineAdmin\Events\OperationLog as OperationLogEvent;
 use Lany\MineAdmin\Helper\Annotation\Handle\OperationLogAnnotation;
 use Lany\MineAdmin\Helper\Annotation\Permission;
 use Lany\MineAdmin\Helper\Ip2region;
@@ -45,7 +44,7 @@ class OperationLog
                 //'protocol' => request()->get,
                 'ip' => request()->ip(),
                 'ip_location' => (new Ip2region())->search(request()->ip()),
-                'service_name' => Permission::$CODE ? $this->getOperationMenuName() : '',
+                'service_name' => Permission::$CODE ? $this->getOperationMenuName() : $annotations->menuName,
                 'request_data' => json_encode(request()->all(), JSON_UNESCAPED_UNICODE),
                 'response_code' => $response->getStatusCode(),
                 'response_data' => $isDownload ? '文件下载' : $response->getContent(),

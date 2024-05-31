@@ -51,11 +51,77 @@ class RoleController extends MineController
     }
 
     /**
+     * 更新角色.
+     */
+    #[Permission('system:role:update'), OperationLog]
+    public function update(int $id, SystemRoleRequest $request): JsonResponse
+    {
+        return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
      * 单个或批量删除数据到回收站.
      */
     #[Permission('system:role:delete')]
     public function delete(): JsonResponse
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 通过角色获取菜单.
+     */
+    public function getMenuByRole(int $id): JsonResponse
+    {
+        return $this->success($this->service->getMenuByRole($id));
+    }
+
+    /**
+     * 通过角色获取部门.
+     */
+    public function getDeptByRole(int $id): JsonResponse
+    {
+        return $this->success($this->service->getDeptByRole($id));
+    }
+
+    /**
+     * 更新用户数据权限.
+     */
+    #[Permission('system:role:dataPermission'), OperationLog]
+    public function dataPermission(int $id): JsonResponse
+    {
+        return $this->service->update($id, $this->request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 更新用户菜单权限.
+     */
+    #[Permission('system:role:menuPermission'), OperationLog]
+    public function menuPermission(int $id): JsonResponse
+    {
+        return $this->service->update($id, $this->request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 更改角色状态
+     */
+    #[Permission('system:role:changeStatus'), OperationLog]
+    public function changeStatus(SystemRoleRequest $request): JsonResponse
+    {
+        return $this->service->changeStatus((int) $request->input('id'), (string) $request->input('status'))
+            ? $this->success() : $this->error();
+    }
+
+    /**
+     * 数字运算操作.
+     */
+    #[Permission('system:role:update'), OperationLog]
+    public function numberOperation(): JsonResponse
+    {
+        return $this->service->numberOperation(
+            (int) $this->request->input('id'),
+            (string) $this->request->input('numberName'),
+            (int) $this->request->input('numberValue', 1),
+        ) ? $this->success() : $this->error();
     }
 }

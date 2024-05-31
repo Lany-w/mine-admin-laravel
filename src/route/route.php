@@ -99,6 +99,15 @@ app('router')->group($attributes, function ($router) use($authController) {
         $router->get('/index', 'index');
         $router->get('/list', 'list');
         $router->post('/save', 'save');
+        $router->put('/numberOperation', 'numberOperation');
+        $router->put('/changeStatus', 'changeStatus');
+        $router->put('/dataPermission', 'dataPermission');
+        $router->get('/getMenuByRole/{id}', 'getMenuByRole');
+        $router->get('/getDeptByRole/{id}', 'getDeptByRole');
+        $router->put('/menuPermission/{id}', 'menuPermission');
+        $router->put('/dataPermission/{id}', 'dataPermission');
+        $router->put('/update/{id}', 'update');
+        $router->delete('/delete', 'delete');
     });
     /**
      * post

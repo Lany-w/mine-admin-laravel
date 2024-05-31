@@ -169,5 +169,15 @@ abstract class SystemService
         return app($this->model)->read($id, $column);
     }
 
+    public function numberOperation(mixed $id, string $field, int $value): bool
+    {
+        return app($this->model)->numberOperation($id, $field, $value);
+    }
+
+    public function delete(array $ids): bool
+    {
+        return ! empty($ids) && app($this->model)->delete($ids);
+    }
+
 
 }
