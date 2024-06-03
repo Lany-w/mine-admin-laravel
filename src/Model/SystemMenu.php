@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
-use Lany\MineAdmin\Traits\PageList;
 
 /**
  * @property int $id 主键

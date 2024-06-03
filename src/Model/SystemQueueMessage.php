@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Lany\MineAdmin\Mine;
-use Lany\MineAdmin\Traits\PageList;
 
 /**
  * @property int $id 主键

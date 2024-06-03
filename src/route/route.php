@@ -91,6 +91,14 @@ app('router')->group($attributes, function ($router) use($authController) {
     app('router')->group(['prefix' => 'dept', 'controller' => DeptController::class], function ($router) {
         $router->get('/index', 'index');
         $router->get('/tree', 'tree');
+        $router->post('/save', 'save');
+        $router->put('/numberOperation', 'numberOperation');
+        $router->put('/changeStatus', 'changeStatus');
+        $router->delete('/delete', 'delete');
+        $router->put('/update/{id}', 'update');
+        $router->get('/getLeaderList', 'getLeaderList');
+        $router->post('/addLeader', 'addLeader');
+        $router->delete('/delLeader', 'delLeader');
     });
     /**
      * role

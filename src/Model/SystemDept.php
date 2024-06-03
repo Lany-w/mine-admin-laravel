@@ -9,8 +9,11 @@ namespace Lany\MineAdmin\Model;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Lany\MineAdmin\Exceptions\MineException;
 
 /**
  * @property int $id 主键
@@ -33,6 +36,50 @@ class SystemDept extends MineModel
 {
     use SoftDeletes;
     protected $table = 'system_dept';
+
+    protected $fillable = ['id', 'parent_id', 'level', 'name', 'leader', 'phone', 'status', 'sort', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'remark'];
+
+    /**
+     * 通过中间表关联部门.
+     */
+    public function leader(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemUser::class, 'system_dept_leader', 'dept_id', 'user_id');
+    }
+
+    /**
+     * 获取部门领导列表.
+     */
+    public function getLeaderList(?array $params = null): array
+    {
+        if (blank($params['dept_id'])) {
+            throw new MineException('缺少部门ID', 500);
+        }
+        $query = DB::table('system_user as u')
+            ->join('system_dept_leader as dl', 'u.id', '=', 'dl.user_id')
+            ->where('dl.dept_id', '=', $params['dept_id']);
+
+        if (isset($params['username']) && filled($params['username'])) {
+            $query->where('u.username', 'like', '%' . $params['username'] . '%');
+        }
+
+        if (isset($params['nickname']) && filled($params['nickname'])) {
+            $query->where('u.nickname', 'like', '%' . $params['nickname'] . '%');
+        }
+
+        if (isset($params['status']) && filled($params['status'])) {
+            $query->where('u.status', $params['status']);
+        }
+
+        return $this->setPaginate(
+            $query->paginate(
+                (int) ($params['pageSize'] ?? self::PAGE_SIZE),
+                ['u.*', 'dl.created_at as leader_add_time'],
+                'page',
+                (int) ($params['page'] ?? 1)
+            )
+        );
+    }
 
     public function handleSearch(Builder $query, array $params): Builder
     {

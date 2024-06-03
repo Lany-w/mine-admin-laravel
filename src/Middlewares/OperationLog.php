@@ -44,7 +44,7 @@ class OperationLog
                 //'protocol' => request()->get,
                 'ip' => request()->ip(),
                 'ip_location' => (new Ip2region())->search(request()->ip()),
-                'service_name' => Permission::$CODE ? $this->getOperationMenuName() : $annotations->menuName,
+                'service_name' => $this->getServiceName($annotations),
                 'request_data' => json_encode(request()->all(), JSON_UNESCAPED_UNICODE),
                 'response_code' => $response->getStatusCode(),
                 'response_data' => $isDownload ? '文件下载' : $response->getContent(),
@@ -58,6 +58,13 @@ class OperationLog
             SystemOperLog::query()->create($operationLog);
         }
 
+    }
+
+    protected function getServiceName($annotations)
+    {
+        if ($annotations->menuName) return $annotations->menuName;
+        if (Permission::$CODE) return $this->getOperationMenuName();
+        return '';
     }
 
     protected function getOperationMenuName(): string

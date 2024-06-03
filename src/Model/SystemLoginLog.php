@@ -8,7 +8,6 @@
 namespace Lany\MineAdmin\Model;
 
 use Illuminate\Database\Eloquent\Builder;
-use Lany\MineAdmin\Traits\PageList;
 
 /**
  * @property int $id 主键

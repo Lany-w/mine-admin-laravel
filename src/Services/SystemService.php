@@ -164,9 +164,9 @@ abstract class SystemService
         return true;
     }
 
-    public function read(mixed $id, array $column = ['*'])
+    public function read(mixed $id, array $column = ['*']): ?MineModel
     {
-        return app($this->model)->read($id, $column);
+        return ($model = $this->model::find($id, $column)) ? $model : null;
     }
 
     public function numberOperation(mixed $id, string $field, int $value): bool
@@ -174,9 +174,23 @@ abstract class SystemService
         return app($this->model)->numberOperation($id, $field, $value);
     }
 
+    public function update(mixed $id, array $data): bool
+    {
+        $this->filterExecuteAttributes($data, true);
+        return $this->model::find($id)->update($data) > 0;
+    }
+
     public function delete(array $ids): bool
     {
-        return ! empty($ids) && app($this->model)->delete($ids);
+        return ! empty($ids) && $this->model::destroy($ids);
+    }
+
+    public function save(array $data): mixed
+    {
+        $data = $this->handleData($data);
+        $this->filterExecuteAttributes($data);
+        $model = $this->model::create($data);
+        return $model->{$model->getKeyName()};
     }
 
 

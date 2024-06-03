@@ -12,7 +12,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Lany\MineAdmin\Model\SystemMenu;
 use Lany\MineAdmin\Model\SystemUser;
 
-trait PageList
+trait MineTrait
 {
     use UserDataScope;
     public const PAGE_SIZE = 15;
@@ -88,6 +88,7 @@ trait PageList
         $model = null;
         return (count($fields) < 1) ? ['*'] : $fields;
     }
+
 
     /**
      * 排序处理器.
